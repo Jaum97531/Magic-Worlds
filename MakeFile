@@ -1,0 +1,38 @@
+# Diretório de destino para os arquivos .o
+OBJ_DIR = Game/obj
+
+# Lista de todos os arquivos .cpp no diretório src
+CPP_FILES := $(wildcard Game/src/*.cpp)
+
+# Adicione o diretório da biblioteca nlohmann/json
+JSON_DIR := src/include/nlohmann
+JSON_INCLUDE := -I$(JSON_DIR)
+
+# Lista de arquivos .o gerados a partir dos arquivos .cpp
+OBJ_FILES := $(patsubst Game/src/%.cpp,$(OBJ_DIR)/%.o,$(CPP_FILES))
+
+# Compilação dos arquivos .cpp para arquivos .o
+$(OBJ_DIR)/%.o: Game/src/%.cpp
+	g++ -c -IGame/include \
+    -IGame/include/Ente \
+    -IGame/include/Gerenciadores \
+    -IGame/include/Ente/Estados \
+    -IGame/include/Ente/Estados/Menus \
+    -IGame/include/Ente/Entidades \
+    -IGame/include/Ente/Entidades/Personagens \
+    -IGame/include/Gerenciadores/Observer \
+    -Isrc/include \
+    -Isrc/include/nlohmann \
+    $< -o $@
+
+# Regra padrão para construir o executável
+all: compile link
+
+compile: $(OBJ_FILES)
+
+link:
+	g++ $(OBJ_FILES) -o main -Lsrc/lib -lsfml-graphics -lsfml-window -lsfml-system -lopengl32 -lsfml-audio
+
+# Limpar os arquivos .o e o executável
+clean:
+	rm -rf $(OBJ_DIR)/*.o main
