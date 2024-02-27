@@ -20,7 +20,6 @@ namespace states{
             ~Lobby();
 
             void tratarSelecao(sf::String selecao);
-            Entidades::Personagens::Jogador* getJog() { return jogador; }
             void desenhar();
             void criarUtilits();
             void criaEnt();

@@ -49,14 +49,14 @@ bool GR::GerenciadorEstados::tratarTrocaEspecificas(int& estado){
     if(estado == GAMEOVER){
         states::GameOver* perdeu = dynamic_cast<states::GameOver*>(mapEstados[GAMEOVER]);
         perdeu->setAnimacao(estadoAtual);
-        perdeu->setPtsJogador((dynamic_cast<states::Lobby*>(mapEstados[LOBBY]))->getJog()->getPontos());
+        perdeu->setPtsJogador(Personagens::Jogador::getInstancia()->getPontos());
         return true;
     }
 
     if (estadoAtual == LOBBY && estado == FASE1) {
         delete mapEstados[FASE1];
         mapEstados[FASE1] == nullptr;
-        states::Fases::Fase1* fase1 = new states::Fases::Fase1((dynamic_cast<states::Lobby*>(mapEstados[LOBBY]))->getJog());
+        states::Fases::Fase1* fase1 = new states::Fases::Fase1();
         mapEstados[FASE1] = fase1;
         return true;
     }
@@ -64,7 +64,8 @@ bool GR::GerenciadorEstados::tratarTrocaEspecificas(int& estado){
     if(estado == FASE_1){
         delete mapEstados[FASE1];
         mapEstados[FASE1] == nullptr;
-        states::Fases::Fase1* fase1 = new states::Fases::Fase1(EntidadeSaver::getInstancia()->loadEntidades());
+        EntidadeSaver load;
+        states::Fases::Fase1* fase1 = new states::Fases::Fase1(load.loadEntidades());
         mapEstados[FASE1] = fase1;
         estado = FASE1;
         return true;

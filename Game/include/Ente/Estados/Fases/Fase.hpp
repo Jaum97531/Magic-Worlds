@@ -16,7 +16,6 @@ namespace states{
             protected:
                 std::vector<Entidade*> listaEntidades;
                 Personagens::Jogador* jogador;
-                EntidadeSaver salvamento;
                 sf::Vector2f limiteDaFase;
                 int valorTileMap;
                 bool salvo;

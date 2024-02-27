@@ -162,7 +162,12 @@ Personagens::Jogador* EntidadeSaver::criarJogador(nlohmann::json jogSaver){
 }
 
 Personagens::Zumbi* EntidadeSaver::criarZumbi(nlohmann::json zumbiSaver){
-
+    Personagens::Zumbi* zumbi = new Personagens::Zumbi();
+    zumbi->setCacando(zumbiSaver["CACANDO"].get<bool>());
+    criarEntidade(zumbi, zumbiSaver);
+    criarPersonagem(zumbi, zumbiSaver);
+    criarInimigo(zumbi, zumbiSaver);
+    return zumbi;
 }
 
 Personagens::Fantasma* EntidadeSaver::criarFantasma(nlohmann::json fantasmaSaver){

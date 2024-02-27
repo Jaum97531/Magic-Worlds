@@ -43,7 +43,7 @@ void Entidades::Personagens::Personagem::aplicarEstadoFisico(){
             corpo.setFillColor(sf::Color::White);
             break;
         case QUEIMANDO :
-            vida -= 1;
+            if(vida > 0) vida -= 1;
             corpo.setFillColor(FOGO);
             break;
         case CONGELADO :

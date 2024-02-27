@@ -7,7 +7,7 @@ namespace states{
             private:
 
             public:
-                Fase1(Personagens::Jogador* jog);
+                Fase1();
                 Fase1(std::vector<Entidade*> vetor);
                 ~Fase1();
 

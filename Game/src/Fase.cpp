@@ -1,6 +1,5 @@
 #include "../include/Ente/Estados/Fases/Fase.hpp"
 #include <cmath>
-#include <iostream>
 #include "../include/Ente/Entidades/Objetos/Lava.hpp"
 #include "../include/Ente/Entidades/Objetos/Caixa.hpp"
 #include "../include/Ente/Entidades/Personagens/Inimigos/Esqueleto.hpp"
@@ -9,14 +8,26 @@
 #include "../include/Gerenciadores/Algoritimos.hpp"
 #include "../include/Ente/Entidades/Projetil.hpp"
 
-using namespace std;
-
  states::Fases::Fase::Fase() {  
     posJogAntiga = sf::Vector2f(0, 0);
-    aleatoria = false;
     Cronometro_De_Atualizacao.restart();
     forcarAtualizacao = false;
-    salvo = false;
+
+    setJogador(Personagens::Jogador::getInstancia());
+    listaEntidades.push_back(jogador);
+    listaEntidades.push_back(jogador->getArea());
+    criarUtilits();
+    jogador->revive();
+}
+
+states::Fases::Fase::Fase(std::unordered_map<int, Entidade*> map){
+    posJogAntiga = sf::Vector2f(0, 0);
+    Cronometro_De_Atualizacao.restart();
+    forcarAtualizacao = false;
+
+    listaEntidades = map; 
+    setJogador(Personagens::Jogador::getInstancia());
+    criarUtilits();
 }
 
 states::Fases::Fase::~Fase(){
@@ -59,50 +70,37 @@ Personagens::Inimigo* states::Fases::Fase::criarFantasma(sf::Vector2f posicao){
 }
 
 void states::Fases::Fase::criarUtilits(){
-    sf::RectangleShape vidaJogador = criarShapeTextura("CORACAO", sf::Vector2f(70*jogador->getMaxVida(), 65), sf::Vector2f(235, 60), true);
-    utilits["VIDA"] = std::pair<sf::Vector2f, sf::RectangleShape>(vidaJogador.getPosition(),vidaJogador);
+    sf::Vector2f SIZE_VIDA = sf::Vector2f(70*jogador->getMaxVida(), 65);
+    sf::Vector2f POS_VIDA = sf::Vector2f(190, 60);
 
-    sf::RectangleShape bgVidaJogador = criarShapeTextura("CORACAO VAZIO", sf::Vector2f(70*jogador->getMaxVida(),65), sf::Vector2f(235, 60), true);
-    utilits["BG VIDA"] = std::pair<sf::Vector2f, sf::RectangleShape>(bgVidaJogador.getPosition(), bgVidaJogador);
+    sf::RectangleShape vidaJogador = criarShapeTextura("CORACAO", SIZE_VIDA, POS_VIDA, true);
+    utilits["VIDA"] = std::pair<sf::Vector2f, sf::RectangleShape>(POS_VIDA, vidaJogador);
 
-    std::string keyLogo = "LOGO ";
-    keyLogo += jogador->getElementoo();
-    sf::RectangleShape logoElemento = criarShapeTextura(keyLogo, sf::Vector2f(100, 110), sf::Vector2f(110, 40), false);
+    sf::RectangleShape bgVidaJogador = criarShapeTextura("CORACAO VAZIO", SIZE_VIDA, POS_VIDA, true);
+    utilits["BG VIDA"] = std::pair<sf::Vector2f, sf::RectangleShape>(POS_VIDA, bgVidaJogador);
+
+    sf::String elemento = jogador->getElementoo();
+    std::string keyLogo = "";
+    if(elemento == "FOGO"){ keyLogo = "LOGO FOGO"; animaCarga.criaFrames("BARRA FOGO", 5, false); }
+    else if(elemento == "VENTO") { keyLogo = "FURACAO"; animacao.criaFrames("BARRA VENTO", 5, false); }
+    else if(elemento == "AGUA") { keyLogo = "LOGO AGUA"; animaCarga.criaFrames("BARRA AGUA", 5, false); }
+    else { keyLogo = "LOGO TERRA"; animaCarga.criaFrames("BARRA TERRA", 5, false); }
+
+    sf::RectangleShape logoElemento = criarShapeTextura(keyLogo, sf::Vector2f(100, 110), sf::Vector2f(70, 40), false);
     utilits["LOGO ELEMENTO"] = std::pair<sf::Vector2f, sf::RectangleShape>(logoElemento.getPosition(), logoElemento);
-}
 
-void states::Fases::Fase::removerEntidade(Entidade* ent){
-    if(ent->getTipoSecundario(Type::Inimigo)){
-        Personagens::Inimigo* inimigo = dynamic_cast<Personagens::Inimigo*>(ent);
-        auto it = std::find(listaEntidades.begin(), listaEntidades.end(), inimigo);
-        if(listaEntidades.end() != it) listaEntidades.erase(it);  
-    
-        it = std::find(listaEntidades.begin(), listaEntidades.end(), inimigo->getArea());
-        if(listaEntidades.end() != it) listaEntidades.erase(it);
+    sf::RectangleShape barraCarga = criarShapeTextura("BARRA VENTO", sf::Vector2f(400, 60), sf::Vector2f(70, pGrafico->get_JANELAY() - 120), false);
+    utilits["BARRA DE CARGA"] = std::pair<sf::Vector2f, sf::RectangleShape>(barraCarga.getPosition(), barraCarga);
 
-        delete ent;
-        ent = nullptr;
-    }
-    else if(ent->getTipoSecundario(Type::Objeto)){
-
-    }
 }
 
 void states::Fases::Fase::criaInimigos(){ 
     std::uniform_int_distribution<> distribuicao(1, 30);
     for(auto it : posInimigos){
         if(it.second == nullptr){
-            int rand = distribuicao(Algoritimos::getGenerator());
-            if(rand < 11){  posInimigos[it.first] = criarEsqueleto(*it.first); }
-            else if (rand < 20) {  posInimigos[it.first] =  criarZumbi(*it.first); }
-            else { posInimigos[it.first] = criarFantasma(*it.first); }
-        }
-        else if(!it.second->getAtivo()) {
-            removerEntidade(it.second); 
-            it.second = nullptr;
-            int rand = distribuicao(Algoritimos::getGenerator());
-            if(rand < 11){  posInimigos[it.first] = criarEsqueleto(*it.first); }
-            else if (rand < 20) {  posInimigos[it.first] =  criarZumbi(*it.first); }
+            int randonValue = distribuicao(Algoritimos::getGenerator());
+            if(randonValue < 11){  posInimigos[it.first] = criarEsqueleto(*it.first); }
+            else if (randonValue < 25) {  posInimigos[it.first] =  criarZumbi(*it.first); }
             else { posInimigos[it.first] = criarFantasma(*it.first); }
         }
     }
@@ -128,18 +126,24 @@ void states::Fases::Fase::criarMapa(std::string plat, std::string fase) {
     plataformas.setPosition(sf::Vector2f(0, 0));
     plataformas.setTexture( textura);
 
-    for (int y = 0; y < sizeY; y += valorTileMap) {
+    for (int y = 0; y < sizeY; y += valorTileMap) 
+    {
         float posY = y * proporcao.y;
-        for (int x = 0; x < sizeX; x += valorTileMap) {
+
+        for (int x = 0; x < sizeX; x += valorTileMap) 
+        {
             int posX = x * proporcao.x;
 
             sf::Color cor = imagem.getPixel(x, y);
             int tamanhoX = 0;
-            while(cor.a){
+
+            while(cor.a)
+            {
                 x += valorTileMap;
                 tamanhoX += valorTileMap;
                 cor = imagem.getPixel(x, y);
             }
+
             if (tamanhoX > 0) {
                 // Usando 'float' para as coordenadas e 'round' para arredondar para o inteiro mais próximo
                 int larguraBloco = tamanhoX * proporcao.x;
@@ -154,14 +158,14 @@ void states::Fases::Fase::criarMapa(std::string plat, std::string fase) {
 void states::Fases::Fase::criarPlataforma(sf::Vector2f pos, sf::Vector2f size){
     Objetos::Plataforma* plat = new Objetos::Plataforma();
     plat->setSize(size);
-    plat->setColor(sf::Color::Red);
     plat->setPosition(pos);
     listaEntidades.push_back(plat);
 }
 
 void states::Fases::Fase::atualizarView(){
     float limiteMinimo = pGrafico->get_JANELAX()/2;
-    float limiteMaximo = limiteDaFase.x - pGrafico->get_JANELAX()/2;
+    float limiteMaximo = limiteDaFase.width - pGrafico->get_JANELAX()/2;
+
     sf::Vector2f centro = pView->getCenter();
 
     if(centro.x >= limiteMinimo && centro.x <= limiteMaximo){
@@ -172,7 +176,7 @@ void states::Fases::Fase::atualizarView(){
             int velocidadeJog = jogador->getVelocidade().x;
             int velocidade = (jogador->getEstado() == CORRENDO) ? (2*velocidadeJog-1) : velocidadeJog-1;
 
-            if(forcarAtualizacao) { velocidade = 30; }
+            if(forcarAtualizacao){ velocidade = 20; }
 
             float novaPosicaoX;
             if(posJog.x >= 250 + centro.x) { novaPosicaoX = std::max(limiteMinimo, std::min(limiteMaximo, centro.x + velocidade)); }
@@ -194,7 +198,13 @@ void states::Fases::Fase::atualizarView(){
 void states::Fases::Fase::atualizarPosicaoDosUtilits(){
     sf::Vector2f centro = pView->getCenter();
     sf::Vector2f size = pView->getSize();
-    sf::FloatRect rect = sf::FloatRect(centro.x - size.x/2, centro.y - size.y/2, centro.x + size.x/2, centro.y + size.y/2);
+    sf::FloatRect rect(
+        centro.x - size.x/2,
+        centro.y - size.y/2,
+        centro.x + size.x/2,
+        centro.y + size.y/2
+    );
+
     for(auto& shape : utilits){
         sf::Vector2f posNova = sf::Vector2f(rect.left + shape.second.first.x, rect.top + shape.second.first.y);
         shape.second.second.setPosition(posNova);
@@ -212,57 +222,25 @@ void states::Fases::Fase::atualizarVidaJogador(){
     }
 }
 
-bool states::Fases::Fase::verificarLimites(Entidade* ent){
-    sf::FloatRect rect1 = ent->getShape()->getGlobalBounds();
-    return !rect1.intersects(sf::FloatRect(-70, -1000, limiteDaFase.x, limiteDaFase.y + 100));
-}
-
-void states::Fases::Fase::desenharEntidades(){
-    for(auto* ent : listaEntidades){
-        if(ent->getAtivo() && ent != jogador && pColisao->verificaEntidadeDentroDaTela(ent))
-            ent->desenhar();
-    }
-
-    if(jogador->getAtivo() &&  pColisao->verificaEntidadeDentroDaTela(jogador)){
-        jogador->desenhar();
-    }
-}
-
 void states::Fases::Fase::desenhar(){
-    if(animacao.TemAnimacao()) bool animou = animacao.anima(&background);
+    if(animacao.TemAnimacao()) bool animou = animacao.anima(&background, false);
     pGrafico->draw(background);
     pGrafico->draw(plataformas);
     desenharUtilits();
     desenharTexto();
-    desenharEntidades();
-}
-
-
-void states::Fases::Fase::executarEntidades(){
-    sf::FloatRect frustum = pView->getViewport();
-
-    for(auto* ent : listaEntidades){ 
-        if(ent->getAtivo()){
-            if(pColisao->verificaEntidadeDentroDaTela(ent)){
-                ent->execute(); 
-                if(!ent->getEstatico()) { ent->acelerarGravidade(); }
-            }
-            if(verificarLimites(ent)) { ent->foraDosLimites(); }
-        }
-    }
+    listaEntidades.desenharEntidades();
 }
 
 void states::Fases::Fase::setJogador(Personagens::Jogador* jog){
     jogador = jog;
-    //listaEntidades.push_back(jogador); 
-    listaEntidades.push_back(jogador->getArea());
     gerenAnimacao =  GR::GerenciadorAnimacao::getInstacia(jogador);
-    jogador->setListaEntidades(&listaEntidades);
+    jogador->setListaEntidades(listaEntidades.getListaTemporaria());
     Personagens::Inimigo::setJogador(jogador);
 }
 
 void states::Fases::Fase::verificaAtualizacao(){
-    if(Cronometro_De_Atualizacao.getElapsedTime().asSeconds() >= 90){
+    int tempo = Cronometro_De_Atualizacao.getElapsedTime().asSeconds();
+    if(tempo >= 40){
         criaInimigos();
         Cronometro_De_Atualizacao.restart();
     }
@@ -273,28 +251,52 @@ void states::Fases::Fase::iniciarEstado(){
     forcarAtualizacao = true;
 }
 
-void states::Fases::Fase::execute(){   
-    executarEntidades();
-    pColisao->executeColisoes(&listaEntidades);
-    atualizarVidaJogador();
-    atualizarView();
-    
-    gerenAnimacao->atualizaLavas();
-    desenhar();
-   
+void states::Fases::Fase::tratarSelecao(){
     if(pEventos->verificaClickTecla(sf::Keyboard::P)){
         pEstados->trocarEstado(PAUSA);
     }
     else if(jogador->verificaMorte()){
         pEstados->trocarEstado(GAMEOVER);
     }
-    else if(pEventos->verificaClickTecla(sf::Keyboard::O) && !salvo){
-        salvarFase();
-        salvo = true;
-    }
+}
+
+void states::Fases::Fase::resized(){
+
+}
+
+void states::Fases::Fase::execute(){   
+    listaEntidades.executarEntidades();
+   // bool animou = animaCarga.anima(&utilits["BARRA DE CARGA"].second, std::round(jogador->getCarga()/3));
+    pColisao->executeColisoes(listaEntidades.getMapEntidade());
+    atualizarVidaJogador();
+    atualizarView();
+    
+    gerenAnimacao->atualizaLavas();
+    desenhar();
+    tratarSelecao();
+
     verificaAtualizacao();
+    listaEntidades.mesclarListaTemporaria();
+    listaEntidades.removerInativos();
+    listaEntidades.verificaLimites(limiteDaFase);
+}
+
+
+void states::Fases::Fase::setInimigos(){
+    std::unordered_map<int, Entidade*> mapEntidade = *listaEntidades.getMapEntidade();
+    for(auto it : mapEntidade){
+        if(it.second != nullptr && it.second->getTipo(Type::Inimigo)){
+            for(auto it2 : posInimigos){
+                if(it2.second == nullptr){
+                    posInimigos[it2.first] =  dynamic_cast<Personagens::Inimigo*>(it.second);
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void states::Fases::Fase::salvarFase(){
-    salvamento.salvarEntidades(listaEntidades);
+    FaseSaver salvamento;
+    salvamento.salvarEntidades(*listaEntidades.getMapEntidade(), numeroDeFase());
 }

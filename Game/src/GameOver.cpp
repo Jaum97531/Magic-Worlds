@@ -45,8 +45,5 @@ void states::GameOver::setAnimacao(int fase){
         case FASE1 :
             animacao.criaFrames("VULCAO", 8, false);
             break;
-        case FASE2 :
-            animacao.criaFrames("FASE LAVA", 8, false);
-            break;
     }
 }

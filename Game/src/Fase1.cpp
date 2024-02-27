@@ -3,12 +3,13 @@
 #include <iostream>
 using namespace std;
 
-states::Fases::Fase1::Fase1(Personagens::Jogador* jog){
+states::Fases::Fase1::Fase1(){
     listaEntidades.clear();
     limiteDaFase = sf::Vector2f(3834, 1980);
     valorTileMap = 32;
-    setJogador(jog);
-    listaEntidades.push_back(jog);
+    setJogador(Personagens::Jogador::getInstancia());
+    listaEntidades.push_back(jogador);
+    listaEntidades.push_back(jogador->getArea());
     determinarPosicaoInimigos();
     criarFase();
     criarUtilits();
@@ -76,8 +77,9 @@ void states::Fases::Fase1::setInimigos(){
         if(it != nullptr){
             if(it->getTipoSecundario(Type::Inimigo)){
                 for(auto it2 : posInimigos){
-                    if(it2.second == nullptr){   
-                        posInimigos[it2.first] =  static_cast<Personagens::Inimigo*>(it);
+                    if(it2.second == nullptr){
+                        posInimigos[it2.first] =  dynamic_cast<Personagens::Inimigo*>(it);
+                        break;
                     }
                 }
             }
