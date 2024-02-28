@@ -36,7 +36,7 @@ namespace GR{
             void colisaoAreaProjetil(Entidade* area, Entidade* projetil, sf::FloatRect intercesao);
             void colisaoAreaObjeto(Entidade* area, Entidade* objeto, sf::FloatRect intercesao);
             
-            void executeColisoes(std::vector<Entidade*>* listaEntidades);
+            void executeColisoes(std::unordered_map<int, Entidade*>* mapEntidade);
             void criarColisaoMap();
     };
 }

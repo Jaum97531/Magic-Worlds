@@ -8,14 +8,13 @@ namespace states{
 
             public:
                 Fase1();
-                Fase1(std::vector<Entidade*> vetor);
+                Fase1(std::unordered_map<int, Entidade*> map);
                 ~Fase1();
 
                 void criarFase();
                 void carregarFase();
                 void criaObstaculos();
                 void determinarPosicaoInimigos();
-                void setInimigos();
                 const int numeroDeFase() { return FASE1; }
         };
     }

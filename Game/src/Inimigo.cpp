@@ -2,7 +2,7 @@
 
 Entidades::Personagens::Jogador* Entidades::Personagens::Inimigo::jogador = NULL;
 Entidades::Personagens::Inimigo::Inimigo() : estado(DEBOA), vendo(true), area(this, &vendo, 0, true), caminhar(true){
-    addTipoSecundario(Type::Inimigo);
+    tipos[Type::Inimigo] = true;
     cronometroDePerseguicao.restart();
     area.setSize(sf::Vector2f(20, 100));
     area.setColor(sf::Color::Transparent);
@@ -38,18 +38,30 @@ void Entidades::Personagens::Inimigo::determinaDirecao(){
 
 }
 
+void Entidades::Personagens::Inimigo::tratarColisao(Jogador* jogador, std::string direcao){
+    if(corpo.getPosition().x < jogador->getPosition().x)
+        jogador->deslocar(sf::Vector2f(20, -20));
+    else
+        jogador->deslocar(sf::Vector2f(-20, -20));
+
+    this->direcao = !this->direcao;
+    jogador->diminuiVida();
+    estado = DEBOA;
+    area.atualizaPosicao(this->direcao);
+}
+
 void Entidades::Personagens::Inimigo::execute(){
     movimento = sf::Vector2f(0, 0);
-    
-    aplicarEstadoFisico();
 
     determinaDirecao();
 
     move();
 
+    aplicarEstadoFisico();
+
     corpo.move(sf::Vector2f(movimento.x, gravidade + movimento.y));
     
-    bool animou = animaAndando.anima(&corpo, direcao);
+    bool animou = animaAndando.anima(&corpo, direcao, false);
 
     area.atualizaPosicao(direcao);
 

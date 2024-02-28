@@ -2,8 +2,6 @@
 #include "../Entidade.hpp"
 #include <vector>
 
-
-
 namespace Classes{
     class Atirador {
         protected:
@@ -14,8 +12,7 @@ namespace Classes{
             Atirador();
             ~Atirador();
 
-            void setListaEntidades(std::vector<Entidades::Entidade*>* list) { listaEntidades = list;}
-            void removeProjetil(Entidades::Projetil* projetil);
+            void setListaEntidades(std::vector<Entidades::Entidade*>* list) { listaEntidades = list; }
             void criarProjetil(bool direcao, sf::RectangleShape corpo);
             virtual void atirar(bool direcao, sf::RectangleShape corpo);
 

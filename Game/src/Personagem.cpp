@@ -8,11 +8,47 @@ Entidades::Personagens::Personagem::Personagem(){
     direcao = true;
     estatico = false;
     estadoFisico = NORMAL;
-    
+    tipos[Type::Personagem] = true;
+    Tipocolision = Type::Personagem;
 }
 
 Entidades::Personagens::Personagem::~Personagem(){
 
+}
+
+void Entidades::Personagens::Personagem::setFalseResistencias(){
+    resistencias[QUEIMANDO] = false;
+    resistencias[CONGELADO] = false;
+    resistencias[INTANGIVEL] = false;
+    resistencias[TONTO] = false;
+    resistencias[ENVENENADO] = false;
+}
+
+void Entidades::Personagens::Personagem::encerrarEstadoFisico(){
+    float tempo = tempoEstado.getElapsedTime().asSeconds();
+    switch (estadoFisico){
+        case QUEIMANDO : 
+            if(tempo >= 2){
+                tempoEstado.restart();
+                estadoFisico = NORMAL;
+            }
+            break;
+        case CONGELADO:
+            if(tempo >= 5){
+                tempoEstado.restart();
+                estadoFisico = NORMAL;
+            }
+            break;
+        case INTANGIVEL:
+            break;
+    }
+}
+
+void Entidades::Personagens::Personagem::setEstadoFisico(const int estadoF) { 
+    if(!resistencias[estadoF]) {
+        estadoFisico = estadoF; 
+        tempoEstado.restart();
+    } 
 }
 
 
@@ -36,18 +72,19 @@ bool Entidades::Personagens::Personagem::verificaMorte(){
 }
 
 void Entidades::Personagens::Personagem::aplicarEstadoFisico(){
-    if(tempoEstado.getElapsedTime().asSeconds() > 4 && estadoFisico != INTANGIVEL){ estadoFisico = NORMAL; }
-    
+    encerrarEstadoFisico();
+
     switch (estadoFisico){
         case NORMAL:
             corpo.setFillColor(sf::Color::White);
             break;
         case QUEIMANDO :
             if(vida > 0) vida -= 1;
-            corpo.setFillColor(FOGO);
+            corpo.setFillColor(COR_FOGO);
             break;
         case CONGELADO :
-            corpo.setFillColor(AGUA);
+            movimento = sf::Vector2f(movimento.x/3, movimento.y/3);
+            corpo.setFillColor(COR_AGUA);
             break;
         case INTANGIVEL :
             sf::Color cor = sf::Color::White;

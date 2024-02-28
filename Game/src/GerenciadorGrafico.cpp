@@ -2,6 +2,7 @@
 #include"../include/Ente/Ente.hpp"
 
 GR::GerenciadorGrafico* GR::GerenciadorGrafico::instancia = nullptr; 
+
 GR::GerenciadorGrafico::GerenciadorGrafico(){
     pImagens = GR::GerenciadorImagens::getInstancia();
     janela = new sf::RenderWindow(sf::VideoMode::getFullscreenModes()[0], "Game", sf::Style::Fullscreen);
@@ -11,9 +12,8 @@ GR::GerenciadorGrafico::GerenciadorGrafico(){
     camera.setSize(sf::Vector2f(janela->getSize()));
     camera.setCenter(camera.getSize()/2.f);
     janela->setView(camera);
-
-    janela->setFramerateLimit(20);
-    fonte->loadFromFile("C:/Users/JaZ/Documents/game/utilits/alagard.ttf");
+    janela->setFramerateLimit(25);
+    fonte->loadFromFile("utilits/alagard.ttf");
 
 }
 
@@ -23,7 +23,9 @@ GR::GerenciadorGrafico::~GerenciadorGrafico(){
 }
 
 GR::GerenciadorGrafico* GR::GerenciadorGrafico::getInstancia(){
-    if(instancia == nullptr){ instancia = new GerenciadorGrafico(); }
+    if(instancia == nullptr)
+        instancia = new GerenciadorGrafico(); 
+
     return instancia;
 }
 
@@ -36,15 +38,13 @@ const bool GR::GerenciadorGrafico::janelaAberta() const {
 }
 
 void GR::GerenciadorGrafico::limpar(){
-    if(janelaAberta()) { janela->clear(); }
+    if(janelaAberta()) 
+        janela->clear(); 
 }
 
 void GR::GerenciadorGrafico::mostrar(){
-    if(janelaAberta()) { janela->display(); }
-}
-
-void GR::GerenciadorGrafico::centralizarCamera(sf::Vector2f pos){
-
+    if(janelaAberta()) 
+        janela->display(); 
 }
 
 void GR::GerenciadorGrafico::desenhar(Ente* ent){

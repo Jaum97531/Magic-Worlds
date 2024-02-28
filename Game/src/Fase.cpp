@@ -18,6 +18,7 @@
     listaEntidades.push_back(jogador->getArea());
     criarUtilits();
     jogador->revive();
+    iniciarTextos();
 }
 
 states::Fases::Fase::Fase(std::unordered_map<int, Entidade*> map){
@@ -28,12 +29,10 @@ states::Fases::Fase::Fase(std::unordered_map<int, Entidade*> map){
     listaEntidades = map; 
     setJogador(Personagens::Jogador::getInstancia());
     criarUtilits();
+    iniciarTextos();
 }
 
 states::Fases::Fase::~Fase(){
-    for(auto it : posInimigos){
-        delete it.first;
-    }
     posInimigos.clear();
 }
 
@@ -71,7 +70,7 @@ Personagens::Inimigo* states::Fases::Fase::criarFantasma(sf::Vector2f posicao){
 
 void states::Fases::Fase::criarUtilits(){
     sf::Vector2f SIZE_VIDA = sf::Vector2f(70*jogador->getMaxVida(), 65);
-    sf::Vector2f POS_VIDA = sf::Vector2f(190, 60);
+    sf::Vector2f POS_VIDA = sf::Vector2f(80, 60);
 
     sf::RectangleShape vidaJogador = criarShapeTextura("CORACAO", SIZE_VIDA, POS_VIDA, true);
     utilits["VIDA"] = std::pair<sf::Vector2f, sf::RectangleShape>(POS_VIDA, vidaJogador);
@@ -81,27 +80,29 @@ void states::Fases::Fase::criarUtilits(){
 
     sf::String elemento = jogador->getElementoo();
     std::string keyLogo = "";
-    if(elemento == "FOGO"){ keyLogo = "LOGO FOGO"; animaCarga.criaFrames("BARRA FOGO", 5, false); }
-    else if(elemento == "VENTO") { keyLogo = "FURACAO"; animacao.criaFrames("BARRA VENTO", 5, false); }
-    else if(elemento == "AGUA") { keyLogo = "LOGO AGUA"; animaCarga.criaFrames("BARRA AGUA", 5, false); }
-    else { keyLogo = "LOGO TERRA"; animaCarga.criaFrames("BARRA TERRA", 5, false); }
+    if(elemento == "FOGO"){ keyLogo = "LOGO FOGO"; animaCarga.criaFrames("BARRA FOGO", 13, false); }
+    else if(elemento == "VENTO") { keyLogo = "FURACAO"; animaCarga.criaFrames("BARRA VENTO", 13, false); }
+    else if(elemento == "AGUA") { keyLogo = "LOGO AGUA"; animaCarga.criaFrames("BARRA AGUA", 13, false); }
+    else { keyLogo = "LOGO TERRA"; animaCarga.criaFrames("BARRA TERRA", 13, false); }
 
-    sf::RectangleShape logoElemento = criarShapeTextura(keyLogo, sf::Vector2f(100, 110), sf::Vector2f(70, 40), false);
+    sf::RectangleShape logoElemento = criarShapeTextura(keyLogo, sf::Vector2f(115, 100), sf::Vector2f(pGrafico->get_JANELAX() - 531, 35), false);
     utilits["LOGO ELEMENTO"] = std::pair<sf::Vector2f, sf::RectangleShape>(logoElemento.getPosition(), logoElemento);
 
-    sf::RectangleShape barraCarga = criarShapeTextura("BARRA VENTO", sf::Vector2f(400, 60), sf::Vector2f(70, pGrafico->get_JANELAY() - 120), false);
+    sf::RectangleShape barraCarga = criarShapeTextura("BARRA VENTO", sf::Vector2f(426, 60), sf::Vector2f(pGrafico->get_JANELAX() - 486, 60), false);
     utilits["BARRA DE CARGA"] = std::pair<sf::Vector2f, sf::RectangleShape>(barraCarga.getPosition(), barraCarga);
 
+    sf::RectangleShape retanguloPontos = criarShapeTextura("", sf::Vector2f(100, 60), sf::Vector2f(pGrafico->get_JANELAX()/2, 60), false);
+    utilits["BARRA PONTOS"] = std::pair<sf::Vector2f, sf::RectangleShape>(retanguloPontos.getPosition(), retanguloPontos);
 }
 
 void states::Fases::Fase::criaInimigos(){ 
     std::uniform_int_distribution<> distribuicao(1, 30);
     for(auto it : posInimigos){
-        if(it.second == nullptr){
+        if(it.second == -1 || !listaEntidades.returnEntidade(it.second)){
             int randonValue = distribuicao(Algoritimos::getGenerator());
-            if(randonValue < 11){  posInimigos[it.first] = criarEsqueleto(*it.first); }
-            else if (randonValue < 25) {  posInimigos[it.first] =  criarZumbi(*it.first); }
-            else { posInimigos[it.first] = criarFantasma(*it.first); }
+            if(randonValue < 6){  posInimigos[it.first] = criarFantasma(it.first)->getId(); }
+            else if (randonValue < 23) {  posInimigos[it.first] =  criarZumbi(it.first)->getId(); }
+            else { posInimigos[it.first] = criarEsqueleto(it.first)->getId(); }
         }
     }
 }
@@ -152,6 +153,23 @@ void states::Fases::Fase::criarMapa(std::string plat, std::string fase) {
                 criarPlataforma(sf::Vector2f(std::round(posX), std::round(posY)), sf::Vector2f(larguraBloco, alturaBloco));
             }
         }
+    }
+}
+
+void states::Fases::Fase::iniciarTextos(){
+    int JANELAX = pGrafico->get_JANELAX();
+    int JANELAY = pGrafico->get_JANELAY();
+    
+    sf::Text bgpontos = criarTexto(std::to_string(jogador->getPontos()), 60, sf::Vector2f(JANELAX/2 - 15, 60), sf::Color::Black);
+    titulos.push_back(bgpontos);
+
+    sf::Text pontos = criarTexto(std::to_string(jogador->getPontos()), 60, sf::Vector2f(JANELAX/2 - 10, 60), AZULVERDE);
+    titulos.push_back(pontos);
+}
+
+void states::Fases::Fase::atualizarPontos(){
+    for(auto& it : titulos){
+        it.setString(std::to_string(jogador->getPontos()));
     }
 }
 
@@ -209,6 +227,12 @@ void states::Fases::Fase::atualizarPosicaoDosUtilits(){
         sf::Vector2f posNova = sf::Vector2f(rect.left + shape.second.first.x, rect.top + shape.second.first.y);
         shape.second.second.setPosition(posNova);
     }
+    bool entrou = false;
+    sf::Vector2f posicao = utilits["BARRA PONTOS"].second.getPosition();
+    for(auto& it : titulos){
+        if(!entrou) { it.setPosition(sf::Vector2f(posicao.x-5, posicao.y)); entrou = true; }
+        else it.setPosition(posicao);
+    }
 }
 
 void states::Fases::Fase::atualizarVidaJogador(){
@@ -226,9 +250,9 @@ void states::Fases::Fase::desenhar(){
     if(animacao.TemAnimacao()) bool animou = animacao.anima(&background, false);
     pGrafico->draw(background);
     pGrafico->draw(plataformas);
-    desenharUtilits();
     desenharTexto();
     listaEntidades.desenharEntidades();
+    desenharUtilits();
 }
 
 void states::Fases::Fase::setJogador(Personagens::Jogador* jog){
@@ -240,7 +264,7 @@ void states::Fases::Fase::setJogador(Personagens::Jogador* jog){
 
 void states::Fases::Fase::verificaAtualizacao(){
     int tempo = Cronometro_De_Atualizacao.getElapsedTime().asSeconds();
-    if(tempo >= 40){
+    if(tempo >= 60){
         criaInimigos();
         Cronometro_De_Atualizacao.restart();
     }
@@ -266,7 +290,8 @@ void states::Fases::Fase::resized(){
 
 void states::Fases::Fase::execute(){   
     listaEntidades.executarEntidades();
-   // bool animou = animaCarga.anima(&utilits["BARRA DE CARGA"].second, std::round(jogador->getCarga()/3));
+
+    bool animou = animaCarga.anima(&utilits["BARRA DE CARGA"].second, (double)jogador->getCarga());
     pColisao->executeColisoes(listaEntidades.getMapEntidade());
     atualizarVidaJogador();
     atualizarView();
@@ -275,11 +300,12 @@ void states::Fases::Fase::execute(){
     desenhar();
     tratarSelecao();
 
-    verificaAtualizacao();
     listaEntidades.mesclarListaTemporaria();
-    listaEntidades.removerInativos();
     listaEntidades.verificaLimites(limiteDaFase);
-}
+    verificaAtualizacao();
+    atualizarPontos();
+    listaEntidades.removerInativos();
+ }
 
 
 void states::Fases::Fase::setInimigos(){
@@ -287,8 +313,8 @@ void states::Fases::Fase::setInimigos(){
     for(auto it : mapEntidade){
         if(it.second != nullptr && it.second->getTipo(Type::Inimigo)){
             for(auto it2 : posInimigos){
-                if(it2.second == nullptr){
-                    posInimigos[it2.first] =  dynamic_cast<Personagens::Inimigo*>(it.second);
+                if(it2.second == -1){
+                    posInimigos[it2.first] = it.second->getId();
                     break;
                 }
             }

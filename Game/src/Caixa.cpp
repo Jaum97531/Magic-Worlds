@@ -4,7 +4,7 @@
 Entidades::Objetos::Caixa::Caixa(){
     corpo.setSize(sf::Vector2f(70, 70));
     corpo.setTexture(pGrafico->getPimagens()->getTextura("CAIXA"));
-    addTipoSecundario(Type::Caixa);
+    tipos[Type::Caixa] = true;
     estatico = false;
 }
 

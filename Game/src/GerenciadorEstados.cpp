@@ -4,12 +4,14 @@
 #include "../include/Ente/Estados/Menus/Pausa.hpp"
 #include "../include/Ente/Estados/Menus/GameOver.hpp"
 #include "../include/Ente/Estados/Menus/Rank.hpp"
+#include "../include/Ente/Estados/Menus/Continua.hpp"
 #include <iostream>
-#include "../include/Ente/Entidades/EntidadeSaver.hpp"
+#include "../include/Ente/FaseSaver.hpp"
 
 GR::GerenciadorEstados* GR::GerenciadorEstados::instancia = nullptr;
 GR::GerenciadorEstados::GerenciadorEstados() {
-    estadoAtual = 0;
+    estadoAtual = INICIAL;
+    observar(GerenciadorEventos::getInstancia());
 }
 
 GR::GerenciadorEstados::~GerenciadorEstados(){
@@ -20,12 +22,28 @@ GR::GerenciadorEstados::~GerenciadorEstados(){
 }
 
 GR::GerenciadorEstados* GR::GerenciadorEstados::getInstancia(){
-    if(instancia == nullptr){ instancia = new GR::GerenciadorEstados(); }
+    if(instancia == nullptr)
+        instancia = new GR::GerenciadorEstados();
+
     return instancia;
 }
 
-void GR::GerenciadorEstados::criarEstados(){
+void GR::GerenciadorEstados::notifica(int tipo){
+    if(tipo == RESIZED){
+        for(auto it : mapEstados){
+            if(it.second != nullptr){
+                it.second->resized();
+            }
+        }
+    }
+}
 
+void GR::GerenciadorEstados::deleteEstado(int estado){
+    delete mapEstados[estado];
+    mapEstados[estado] = nullptr;
+}
+
+void GR::GerenciadorEstados::criarEstados(){
     states::MenuInicial* menuInicial = new states::MenuInicial();
     mapEstados[INICIAL] = menuInicial;
 
@@ -43,34 +61,34 @@ void GR::GerenciadorEstados::criarEstados(){
     states::Rank* rank = new states::Rank();
     mapEstados[RANK] = rank;
 
+    states::Continua* continua = new states::Continua();
+    mapEstados[MENSAGEM] = continua;
+
 }
 
 bool GR::GerenciadorEstados::tratarTrocaEspecificas(int& estado){
+    
     if(estado == GAMEOVER){
         states::GameOver* perdeu = dynamic_cast<states::GameOver*>(mapEstados[GAMEOVER]);
         perdeu->setAnimacao(estadoAtual);
-        perdeu->setPtsJogador(Personagens::Jogador::getInstancia()->getPontos());
         return true;
     }
 
-    if (estadoAtual == LOBBY && estado == FASE1) {
-        delete mapEstados[FASE1];
-        mapEstados[FASE1] == nullptr;
+    if (estado == NEWGAME) {
+        deleteEstado(FASE1);
         states::Fases::Fase1* fase1 = new states::Fases::Fase1();
-        mapEstados[FASE1] = fase1;
-        return true;
-    }
-
-    if(estado == FASE_1){
-        delete mapEstados[FASE1];
-        mapEstados[FASE1] == nullptr;
-        EntidadeSaver load;
-        states::Fases::Fase1* fase1 = new states::Fases::Fase1(load.loadEntidades());
         mapEstados[FASE1] = fase1;
         estado = FASE1;
         return true;
     }
 
+    if(estado == CONTINUE){
+        FaseSaver load;
+        states::Fases::Fase* fase = load.loadEntidades();
+        mapEstados[fase->numeroDeFase()] = fase;
+        estado = fase->numeroDeFase();
+        return true;
+    }
 
     if(estado == PAUSA){
         states::Pausa* pausa = dynamic_cast<states::Pausa*>(mapEstados[PAUSA]);

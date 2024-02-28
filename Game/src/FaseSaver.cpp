@@ -1,6 +1,9 @@
-#include "../include/Ente/Entidades/EntidadeSaver.hpp"
+#include "../include/Ente/FaseSaver.hpp"
+#include "../include/Ente/Estados/Fases/Fase1.hpp"
+#include <iostream>
 
-EntidadeSaver::EntidadeSaver(){
+FaseSaver::FaseSaver(){
+    //CRIA UM MAPA QUE MAPEIA AS FUNCOES DE GERADORES DEPENDENDO DO TIPO RECEBIDO
     geradores[Type::Jogador] = [this](Entidade* ent) {
         return gerarDados(dynamic_cast<Personagens::Jogador*>(ent));
     };
@@ -25,6 +28,8 @@ EntidadeSaver::EntidadeSaver(){
         return gerarDados(dynamic_cast<Projetil*>(ent));
     };
 
+
+    //CRIA O MAPA DE CRIADORES
     criadores["Jogador"] = [this](nlohmann::json jogSaver) { return criarJogador(jogSaver); };
     criadores["Esqueleto"] = [this](nlohmann::json esqueletoSaver) { return criarEsqueleto(esqueletoSaver); };
     criadores["Fantasma"] = [this] (nlohmann::json fantasmaSaver) { return criarFantasma(fantasmaSaver); };
@@ -34,22 +39,23 @@ EntidadeSaver::EntidadeSaver(){
     
 }
 
-EntidadeSaver::~EntidadeSaver(){
-
+FaseSaver::~FaseSaver(){
+    geradores.clear();
+    criadores.clear();
 }
 
-nlohmann::json EntidadeSaver::gerarDados(Personagens::Jogador* jogador){
+nlohmann::json FaseSaver::gerarDados(Personagens::Jogador* jogador){
     nlohmann::json dadosJog = {
         {"Classe", "Jogador"},
         {"Elemento", jogador->getElementoo()},
         {"Pontos", jogador->getPontos()},
-        {"Nome", jogador->getNome()}
+        {"Nome", jogador->getNome()},
     };
     dadosJog.update(dadosPadraoPersonagens(jogador), true);
     return dadosJog;
 }
 
-nlohmann::json EntidadeSaver::gerarDados(Personagens::Zumbi* zumbi){
+nlohmann::json FaseSaver::gerarDados(Personagens::Zumbi* zumbi){
     nlohmann::json dadosZumbi = {
         {"Classe", "Zumbi"},
         {"CACANDO", zumbi->getCacando()}
@@ -58,7 +64,7 @@ nlohmann::json EntidadeSaver::gerarDados(Personagens::Zumbi* zumbi){
     return dadosZumbi;
 }
 
-nlohmann::json EntidadeSaver::gerarDados(Personagens::Fantasma* fantasma){
+nlohmann::json FaseSaver::gerarDados(Personagens::Fantasma* fantasma){
     nlohmann::json dadosFantasma = {
         {"Classe", "Fantasma"},
         {"Invisivel", fantasma->getInvisivel()},
@@ -68,28 +74,29 @@ nlohmann::json EntidadeSaver::gerarDados(Personagens::Fantasma* fantasma){
     return dadosFantasma;
 }
 
-nlohmann::json EntidadeSaver::gerarDados(Personagens::Esqueleto* esqueleto){
+nlohmann::json FaseSaver::gerarDados(Personagens::Esqueleto* esqueleto){
     nlohmann::json dadosEsq = { {"Classe", "Esqueleto"} };
     dadosEsq.update(dadosPadraoInimigos(esqueleto), true);
     return dadosEsq;
 }
 
-nlohmann::json EntidadeSaver::gerarDados(Projetil* projetil){
+nlohmann::json FaseSaver::gerarDados(Projetil* projetil){
     nlohmann::json dadosProjetil = {
-        {"Classse", "Projetil"},
+        {"Classe", "Projetil"},
         {"Elemento", projetil->getElemento()},
         {"ID EntidadeDona", projetil->getID_Atirador()},
         {"Direcao", projetil->getDirecao()},
+        {"Explodindo", projetil->getExplodindo()}
     };
     dadosProjetil.update(dadosPadraoEntidades(projetil), true);
     return dadosProjetil;
 }
 
-nlohmann::json EntidadeSaver::gerarDados(Objetos::Caixa* caixa){
-    //n preciso por enquanto
+nlohmann::json FaseSaver::gerarDados(Objetos::Caixa* caixa){
+    //EXISTE A CAIXA MAS NAO ESTOU CRIANDO NA FASE INT NEM IMPLEMENTEI
 }
 
-nlohmann::json EntidadeSaver::dadosPadraoEntidades(Entidade* ent){
+nlohmann::json FaseSaver::dadosPadraoEntidades(Entidade* ent){
     nlohmann::json dadosEntidade = {
         {"ProxID", Entidades::Entidade::getProximoID()},
         {"ID", ent->getId()},
@@ -101,7 +108,7 @@ nlohmann::json EntidadeSaver::dadosPadraoEntidades(Entidade* ent){
     return dadosEntidade;
 }
 
-nlohmann::json EntidadeSaver::dadosPadraoPersonagens(Personagens::Personagem* personagem){
+nlohmann::json FaseSaver::dadosPadraoPersonagens(Personagens::Personagem* personagem){
     nlohmann::json dadosPersonagens = {
         {"Vida", personagem->getVida()},
         {"EstadoFisico", personagem->getEstadoFisico()},
@@ -111,11 +118,22 @@ nlohmann::json EntidadeSaver::dadosPadraoPersonagens(Personagens::Personagem* pe
     return dadosPersonagens;
 }
 
-nlohmann::json EntidadeSaver::dadosPadraoObjetos(Objetos::Objeto* objeto){
- //nao preciso por enquanto
+nlohmann::json FaseSaver::dadosPadraoObjetos(Objetos::Objeto* objeto){
+    //NAO ESTOU CRIANDO NENHUM OBJETO QUE PRECISA DE SALVAMENTO NA FASE
 }
 
-nlohmann::json EntidadeSaver::dadosPadraoInimigos(Personagens::Inimigo* inimigo){
+bool FaseSaver::vazio() { 
+    std::ifstream arquivo("faseSalva.json");
+    if(arquivo.is_open()){
+        bool empty = false;
+        if(arquivo.peek() == std::ifstream::traits_type::eof()){ empty = true; }
+        arquivo.close();
+        return empty;
+    }
+    return true;
+}
+
+nlohmann::json FaseSaver::dadosPadraoInimigos(Personagens::Inimigo* inimigo){
     nlohmann::json dadosInimigo = {
         {"Estado", inimigo->getEstado()},
         {"Vendo", inimigo->getVendo()},
@@ -126,15 +144,37 @@ nlohmann::json EntidadeSaver::dadosPadraoInimigos(Personagens::Inimigo* inimigo)
     return dadosInimigo;
 }
 
-nlohmann::json EntidadeSaver::determinarQualDadoGerar(Entidade* ent){
-    return geradores[ent->tipoMaisAbstrato()](ent);
+nlohmann::json FaseSaver::determinarQualDadoGerar(Entidade* ent, Type tipo){
+    return geradores[tipo](ent);
 }
 
-void EntidadeSaver::salvarEntidades(std::vector<Entidade*> listaEntidades){
-    for(auto* it : listaEntidades){
-        auto gerador = geradores.find(it->tipoMaisAbstrato());
-        if (gerador != geradores.end()) {
-            dados.push_back(determinarQualDadoGerar(it));
+Type FaseSaver::tipoMaisAbstrato(Entidade* ent){
+    if(ent->getTipo(Type::Jogador)){ 
+        return Type::Jogador; 
+    } else if (ent->getTipo(Type::Projetil)) { 
+        return Type::Projetil;
+    } else if (ent->getTipo(Type::Zumbi)) { 
+        return Type::Zumbi; 
+    } else if (ent->getTipo(Type::Caixa)) { 
+        return Type::Caixa;
+    } else if (ent->getTipo(Type::Esqueleto)) { 
+        return Type::Esqueleto; 
+    } else if (ent->getTipo(Type::Fantasma)) { 
+        return Type::Fantasma; 
+    }
+}
+
+void FaseSaver::salvarEntidades(std::unordered_map<int, Entidade*> mapEntidade, int fase){
+    nlohmann::json faseSaver{ {"Fase", fase} };
+    dados.push_back(faseSaver);
+
+    for(auto it : mapEntidade){
+        if(it.second->getAtivo()){
+            Type tipo = tipoMaisAbstrato(it.second);
+            auto gerador = geradores.find(tipo);
+            
+            if (gerador != geradores.end())
+                dados.push_back(determinarQualDadoGerar(it.second, tipo));
         }
     }
 
@@ -147,7 +187,7 @@ void EntidadeSaver::salvarEntidades(std::vector<Entidade*> listaEntidades){
     }
 }
 
-Personagens::Jogador* EntidadeSaver::criarJogador(nlohmann::json jogSaver){
+Personagens::Jogador* FaseSaver::criarJogador(nlohmann::json jogSaver){
     Personagens::Jogador* jogador =  Personagens::Jogador::getInstancia();
     jogador->trocarElemento(jogSaver["Elemento"].get<std::string>());
 
@@ -161,7 +201,7 @@ Personagens::Jogador* EntidadeSaver::criarJogador(nlohmann::json jogSaver){
     return jogador;
 }
 
-Personagens::Zumbi* EntidadeSaver::criarZumbi(nlohmann::json zumbiSaver){
+Personagens::Zumbi* FaseSaver::criarZumbi(nlohmann::json zumbiSaver){
     Personagens::Zumbi* zumbi = new Personagens::Zumbi();
     zumbi->setCacando(zumbiSaver["CACANDO"].get<bool>());
     criarEntidade(zumbi, zumbiSaver);
@@ -170,7 +210,7 @@ Personagens::Zumbi* EntidadeSaver::criarZumbi(nlohmann::json zumbiSaver){
     return zumbi;
 }
 
-Personagens::Fantasma* EntidadeSaver::criarFantasma(nlohmann::json fantasmaSaver){
+Personagens::Fantasma* FaseSaver::criarFantasma(nlohmann::json fantasmaSaver){
     Personagens::Fantasma* fantasma = new Personagens::Fantasma();
     fantasma->setInvisivel(fantasmaSaver["Invisivel"].get<bool>());
     fantasma->setTempoMax(fantasmaSaver["TempoMax"].get<int>());
@@ -182,7 +222,7 @@ Personagens::Fantasma* EntidadeSaver::criarFantasma(nlohmann::json fantasmaSaver
     return fantasma;
 }
 
-Personagens::Esqueleto* EntidadeSaver::criarEsqueleto(nlohmann::json esqueletoSaver){
+Personagens::Esqueleto* FaseSaver::criarEsqueleto(nlohmann::json esqueletoSaver){
     Personagens::Esqueleto* esqueleto = new Personagens::Esqueleto();
     criarInimigo(esqueleto, esqueletoSaver);
     criarPersonagem(esqueleto, esqueletoSaver);
@@ -191,57 +231,71 @@ Personagens::Esqueleto* EntidadeSaver::criarEsqueleto(nlohmann::json esqueletoSa
     return esqueleto;
 }
 
-Objetos::Caixa* EntidadeSaver::criarCaixa(nlohmann::json caixaSaver){
+Objetos::Caixa* FaseSaver::criarCaixa(nlohmann::json caixaSaver){
 
 }
 
-Projetil* EntidadeSaver::criarProjetil(nlohmann::json projetilSaver){
-    Projetil* projetil = new Projetil(projetilSaver["ID EntidadeDona"].get<int>());
-    projetil->setElemento(std::string(projetilSaver["Elemento"].get<std::string>()));
+Projetil* FaseSaver::criarProjetil(nlohmann::json projetilSaver){
+    Projetil* projetil = new Projetil(projetilSaver["ID EntidadeDona"].get<const int>());
     projetil->setDirecao(projetilSaver["Direcao"].get<bool>());
-    criarEntidade(projetil, projetilSaver);
+    projetil->setElemento(sf::String(projetilSaver["Elemento"].get<std::string>()));
+    projetil->setExplodindo(projetilSaver["Explodindo"].get<bool>());
 
+    criarEntidade(projetil, projetilSaver);
     return projetil;
 }
 
-void EntidadeSaver::criarPersonagem(Personagens::Personagem* personagem, nlohmann::json persoSaver){
+void FaseSaver::criarPersonagem(Personagens::Personagem* personagem, nlohmann::json persoSaver){
     personagem->setVida(persoSaver["Vida"].get<int>());
     personagem->setDirecao(persoSaver["Direcao"].get<bool>());
     personagem->setEstadoFisico(persoSaver["EstadoFisico"].get<int>());
-    listaEntidades.push_back(personagem->getArea());
+    mapEntidades[personagem->getArea()->getId()] = (personagem->getArea());
 }
 
-void EntidadeSaver::criarInimigo(Personagens::Inimigo* inimigo, nlohmann::json inimigoSaver){
+void FaseSaver::criarInimigo(Personagens::Inimigo* inimigo, nlohmann::json inimigoSaver){
     inimigo->setVendo(inimigoSaver["Vendo"].get<bool>());
     inimigo->setCaminhar(inimigoSaver["Caminhar"].get<bool>());
     inimigo->setEstado(inimigoSaver["Estado"].get<int>());
     inimigo->setNvlMaldade(inimigoSaver["Nivel de Maldade"].get<int>());
 }
 
-void EntidadeSaver::criarEntidade(Entidade* ent, nlohmann::json entSaver){
+void FaseSaver::criarEntidade(Entidade* ent, nlohmann::json entSaver){
     ent->setGravidade(entSaver["Gravidade"].get<float>());
     ent->setPosition(sf::Vector2f(entSaver["Posicao X"].get<float>(), entSaver["Posicao Y"].get<float>()));
     ent->setId(entSaver["ID"].get<int>());
     ent->setAtivo(entSaver["Ativo"].get<bool>());
+    mapEntidades[ent->getId()] = ent;
 }
 
-Entidade* EntidadeSaver::criarEntidade(nlohmann::json entSaver){
-    return criadores[entSaver["Classe"].get<std::string>()](entSaver);
+Entidade* FaseSaver::criarEntidade(nlohmann::json entSaver){
+    std::string classe = entSaver["Classe"].get<std::string>();
+    return criadores[classe](entSaver);
 }
 
-std::vector<Entidade*> EntidadeSaver::loadEntidades(){
+states::Fases::Fase* FaseSaver::loadEntidades(){
     std::ifstream arquivo("faseSalva.json");
     
     if(arquivo.is_open()){
         nlohmann::json salve;
         arquivo >> salve;
+
+        int fase = 0;
         for(auto it : salve){
-            listaEntidades.push_back(criarEntidade(it));
+            if(!fase) 
+                fase = it["Fase"].get<int>(); 
+            else {
+                Entidade* ent = criarEntidade(it);
+            }
         }
-        return listaEntidades;
-    }
-    else {
-        cerr<<"Erro ao carregar arquivo"<<endl;;
+        
+        switch(fase){
+            case FASE1 :
+                return new states::Fases::Fase1(mapEntidades);
+            case FASE2 :
+                break;
+        } 
+    } else {
+        std::cerr<<"Erro ao carregar arquivo"<<std::endl;;
     }
 
 }

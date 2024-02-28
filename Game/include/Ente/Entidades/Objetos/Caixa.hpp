@@ -5,7 +5,6 @@ namespace Entidades{
     namespace Objetos{
         class Caixa : public Objeto{
             private:
-                friend class EntidadeSaver;
 
             public:
                 Caixa();

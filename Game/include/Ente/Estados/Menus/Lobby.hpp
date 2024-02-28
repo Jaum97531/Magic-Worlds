@@ -2,6 +2,7 @@
 #include "Menu.hpp"
 #include "../../Entidades/Personagens/Jogador.hpp"
 #include "../../Entidades/Objetos/Plataforma.hpp"
+#include "../../../Gerenciadores/ListaEntidades.hpp"
 #include <vector>
 
 
@@ -9,7 +10,7 @@ namespace states{
     class Lobby : public Menu{
         private:
             Entidades::Personagens::Jogador* jogador;    
-            std::vector<Entidades::Entidade*> listaEntidades;
+            ListaEntidades listaEntidades;
 
             std::string strNome;
             sf::Text nomeJogador;
@@ -31,6 +32,6 @@ namespace states{
             void encerrarEstado();
             void digitar();
             void notifica(int tipo) override;
-            void carregarFaseSalva();
+            void resized();
     };
 }

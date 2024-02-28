@@ -11,16 +11,25 @@ states::MenuInicial::~MenuInicial(){
 }
 
 void states::MenuInicial::iniciarTextos(){
-    sf::Text play(criarTexto("JOGAR", 110, sf::Vector2f(pGrafico->get_JANELAX()/2 - 135, pGrafico->get_JANELAY()/2 - 50), AZULVERDE));
+    int JANELAX = pGrafico->get_JANELAX();
+    int JANELAY = pGrafico->get_JANELAY();
+
+    sf::Text bgPlay(criarTexto("JOGAR", 110, sf::Vector2f(JANELAX/2 - 150, JANELAY/2 - 50), sf::Color::Black));
+    titulos.push_back(bgPlay);
+
+    sf::Text play(criarTexto("JOGAR", 110, sf::Vector2f(JANELAX/2 - 140, JANELAY/2 - 50), AZULVERDE));
     textos.push_back(play);
 
-    sf::Text quit(criarTexto("SAIR", 50, sf::Vector2f(pGrafico->get_JANELAX()/2 - 50, pGrafico->get_JANELAY() - 70), AZULVERDE));
+    sf::Text quit(criarTexto("SAIR", 50, sf::Vector2f(JANELAX/2 - 50, JANELAY - 70), AZULVERDE));
     textos.push_back(quit);
 
-    sf::Text tituloSombra(criarTexto("The magical world", 150, sf::Vector2f(pGrafico->get_JANELAX()/2 - 660, 30), AGUA));
+    sf::Text bgQuit(criarTexto("SAIR", 50, sf::Vector2f(JANELAX/2 - 55, JANELAY - 70), sf::Color::Black));
+    titulos.push_back(bgQuit);
+
+    sf::Text tituloSombra(criarTexto("Magical world", 150, sf::Vector2f(JANELAX/2 - 515, 30), COR_AGUA));
     titulos.push_back(tituloSombra);
 
-    sf::Text titulo(criarTexto("The magical world", 150, sf::Vector2f(pGrafico->get_JANELAX()/2 - 650, 30), AZULVERDE));
+    sf::Text titulo(criarTexto("Magical world", 150, sf::Vector2f(JANELAX/2 - 510, 30), AZULVERDE));
     titulos.push_back(titulo);
 }
 

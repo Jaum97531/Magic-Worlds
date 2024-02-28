@@ -6,6 +6,7 @@ class Observador;
 
 #define KEYBOARD 1
 #define MOUSE 2
+#define RESIZED 3
 
 
 class Observado{

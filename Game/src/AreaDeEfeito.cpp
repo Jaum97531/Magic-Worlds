@@ -6,10 +6,12 @@ Entidades::AreaDeEfeito::AreaDeEfeito(Entidade* dona, bool* ativado, int dano, b
 colideObjeto(colide), dano(dano){
     impulso = sf::Vector2f(0, 0); 
     efeito = NORMAL;
+    tipos[Type::Area] = true;
+    Tipocolision = Type::Area;
 }
 
 void Entidades::AreaDeEfeito::tratarColisao(Objetos::Objeto* obj, std::string direcao){
-    if(entidadeDona->getTipoSecundario(Type::Inimigo)){
+    if(entidadeDona->getTipo(Type::Inimigo)){
         Personagens::Inimigo* ini = dynamic_cast<Personagens::Inimigo*>(entidadeDona);
         ini->tratarColisaoDaArea(direcao, Type::Objeto);
     }
@@ -21,7 +23,7 @@ void Entidades::AreaDeEfeito::tratarColisao(Personagens::Personagem* perso, std:
         else { perso->deslocar(sf::Vector2f(-impulso.x, impulso.y)); }
         perso->setEstadoFisico(efeito);
     }
-    else if(perso->getTipoSecundario(Type::Jogador) && entidadeDona->getTipoSecundario(Type::Inimigo)){
+    else if(perso->getTipo(Type::Jogador) && entidadeDona->getTipo(Type::Inimigo)){
         Personagens::Inimigo* ini = dynamic_cast<Personagens::Inimigo*>(entidadeDona);
         ini->tratarColisaoDaArea(dir, Type::Jogador);
     }

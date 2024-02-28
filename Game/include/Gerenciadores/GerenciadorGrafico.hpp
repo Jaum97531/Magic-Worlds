@@ -9,10 +9,10 @@ const sf::Color CYANOCLARO(224,255,255);
 const sf::Color AMARELORAIO(240,230,140);
 const sf::Color MARROM(139,69,19);
 
-const sf::Color TERRA(139,69,19);
-const sf::Color VENTO(176,224,230);
-const sf::Color AGUA(0,139,139);
-const sf::Color FOGO(139,0,0);
+const sf::Color COR_TERRA(139,69,19);
+const sf::Color COR_VENTO(176,224,230);
+const sf::Color COR_AGUA(0,139,139);
+const sf::Color COR_FOGO(139,0,0);
 
 const sf::Color TERRA_SELECIONADO(210,105,30);
 const sf::Color AGUA_SELECIONADO(102,205,170);
@@ -51,7 +51,6 @@ namespace GR{
             int get_JANELAX() { return janela->getSize().x; }
             int get_JANELAY(){ return janela->getSize().y; }
             
-            void centralizarCamera(sf::Vector2f pos);
             sf::View* getCamera() { return &camera; }
             
             void desenhar(Ente* ent);

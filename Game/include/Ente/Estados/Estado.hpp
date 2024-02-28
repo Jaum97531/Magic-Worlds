@@ -8,15 +8,6 @@
 #include <string>
 #include <map>
 
-#define INICIAL 0
-#define LOBBY 1
-#define FASE1 2
-#define PAUSA 3
-#define RANK 4
-#define GAMEOVER 6
-#define WINS 7
-#define FASE_1 5
-
 /*
         Estados: 
     0 - Menu inicial;
@@ -55,6 +46,7 @@ namespace states{
             
             virtual void desenhar();
             virtual void tratarSelecao(sf::String){}
+            virtual void tratarSelecao(){}
             virtual void selecionar();
 
             void desenharTexto();
@@ -63,6 +55,8 @@ namespace states{
             virtual void encerrarEstado();
             virtual void iniciarEstado();
             virtual void notifica(int tipo);
+
+            virtual void resized() = 0;
 
             virtual void criarUtilits(){}
 

@@ -3,7 +3,7 @@
 
 
 Entidades::Objetos::Lava::Lava(){
-    
+    tipos[Type::Lava] = true;
 }
 
 Entidades::Objetos::Lava::~Lava(){

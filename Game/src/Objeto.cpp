@@ -1,7 +1,8 @@
 #include "../include/Ente/Entidades/Objetos/Objeto.hpp"
 
 Entidades::Objetos::Objeto::Objeto(){
-
+    tipos[Type::Objeto] = true;
+    Tipocolision = Type::Objeto;
 }
 
 Entidades::Objetos::Objeto::~Objeto(){

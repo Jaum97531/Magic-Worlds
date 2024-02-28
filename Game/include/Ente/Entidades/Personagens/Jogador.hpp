@@ -39,7 +39,7 @@ namespace Entidades{
                 static Jogador* getInstancia();
 
                 std::string getElementoo();
-                void setNome(std::string str) { nome = str; }
+                void setNome(std::string str) { nome = (str == "")? "SEMNOME" : str; }
                 std::string getNome() const { return nome; }
                 void aumentarPontos(int pts) { pontos += pts; }
 
@@ -60,14 +60,13 @@ namespace Entidades{
                 void setEfeito(bool e) { efeito = e; }
                 const int getEstado() const { return estado; }
 
-                void revive() { ativo = true; vida = maxVida; estadoFisico = NORMAL; }
+                void revive() { ativo = true; vida = maxVida; estadoFisico = NORMAL; pontos = 0; }
                 AreaDeEfeito* getArea() { return &area; }
 
                 void tratarColisao(Objetos::Objeto* objeto, std::string direcao);
                 const int getPontos() const { return pontos; }
                 void setPontos(int pt) { pontos = pt; }
                 void setPodeMover(bool pode) { pode_mover = pode; }
-                virtual Type tipoMaisAbstrato() { return Type::Jogador; }
         };
     };
 }

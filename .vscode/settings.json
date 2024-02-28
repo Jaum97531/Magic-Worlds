@@ -53,6 +53,7 @@
         "string_view": "cpp",
         "iomanip": "cpp",
         "valarray": "cpp",
-        "codecvt": "cpp"
+        "codecvt": "cpp",
+        "unordered_set": "cpp"
     }
 }

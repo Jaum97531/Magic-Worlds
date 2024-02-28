@@ -1,13 +1,13 @@
 #pragma once
 #include "nlohmann/json.hpp"
-#include "Projetil.hpp"
-#include "Personagens/Jogador.hpp"
-#include "Personagens/Inimigos/Esqueleto.hpp"
-#include "Personagens/Inimigos/Fantasma.hpp"
-#include "Personagens/Inimigos/Zumbi.hpp"
-#include "Objetos/Lava.hpp"
-#include "Objetos/Caixa.hpp"
-#include "../../Gerenciadores/Algoritimos.hpp"
+#include "Entidades/Projetil.hpp"
+#include "Entidades/Personagens/Jogador.hpp"
+#include "Entidades/Personagens/Inimigos/Esqueleto.hpp"
+#include "Entidades/Personagens/Inimigos/Fantasma.hpp"
+#include "Entidades/Personagens/Inimigos/Zumbi.hpp"
+#include "Entidades/Objetos/Lava.hpp"
+#include "Entidades/Objetos/Caixa.hpp"
+#include "../Gerenciadores/Algoritimos.hpp"
 #include <string>
 #include <functional>
 #include <vector>
@@ -16,20 +16,26 @@
 
 using namespace Entidades;
 
-class EntidadeSaver{
+namespace states{
+    namespace Fases{
+        class Fase;
+    };
+}
+
+class FaseSaver{
     private:
         nlohmann::json dados;
         std::unordered_map<Type, std::function<nlohmann::json(Entidade*)>> geradores;
         std::unordered_map<std::string, std::function<Entidade*(nlohmann::json)>> criadores;
 
-        std::vector<Entidade*> listaEntidades;
+        std::unordered_map<int, Entidade*> mapEntidades;
 
-        
     public:
-        EntidadeSaver();
-        ~EntidadeSaver();
+        FaseSaver();
+        ~FaseSaver();
 
-        nlohmann::json determinarQualDadoGerar(Entidade* ent);
+        nlohmann::json determinarQualDadoGerar(Entidade* ent, Type tipo);
+        Type tipoMaisAbstrato(Entidade* ent);
 
         nlohmann::json gerarDados(Personagens::Jogador* jogogador);
         nlohmann::json gerarDados(Personagens::Zumbi* zumbi);
@@ -43,8 +49,8 @@ class EntidadeSaver{
         nlohmann::json dadosPadraoObjetos(Objetos::Objeto* objeto);
         nlohmann::json dadosPadraoInimigos(Personagens::Inimigo* inimigo);
 
-        void salvarEntidades(std::vector<Entidade*> listaEntidades);
-        std::vector<Entidade*> loadEntidades(); 
+        void salvarEntidades(std::unordered_map<int, Entidade*> mapEntidade, int fase);
+        states::Fases::Fase* loadEntidades(); 
 
         Personagens::Jogador* criarJogador(nlohmann::json jogSaver);
         Personagens::Zumbi* criarZumbi(nlohmann::json zumbiSaver);
@@ -52,12 +58,15 @@ class EntidadeSaver{
         Personagens::Esqueleto* criarEsqueleto(nlohmann::json esqueletoSaver);
         Objetos::Caixa* criarCaixa(nlohmann::json caixaSaver);
 
-
         void criarPersonagem(Personagens::Personagem* personagem, nlohmann::json persoSaver);
         void criarInimigo(Personagens::Inimigo* inimigo, nlohmann::json inimigoSaver);
         void criarEntidade(Entidade* ent, nlohmann::json entSaver);
-
+        
         Entidade* criarEntidade(nlohmann::json entSaver);
         Projetil* criarProjetil(nlohmann::json projetilSaver);
+
+        bool vazio();
+
+        
 
 };

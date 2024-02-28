@@ -5,6 +5,8 @@ namespace states{
         class GameOver : public Menu{
             private:
                 int ptsJogador;
+                std::string nome;
+                bool salvo;
 
             public:
                 GameOver();
@@ -12,7 +14,6 @@ namespace states{
 
                 void iniciarTextos() override;
                 void setAnimacao(int fase);
-                void setPtsJogador(int pts) { ptsJogador = pts; }
                 void iniciarEstado();
                 void tratarSelecao(sf::String selecao);
         };

@@ -7,6 +7,7 @@
 #define TONTO 3
 #define QUEBRADO 4
 #define INTANGIVEL 5
+#define ENVENENADO 6
 
 namespace Entidades{
     namespace Personagens{
@@ -22,6 +23,8 @@ namespace Entidades{
 
                 int dano;
 
+                std::unordered_map<int, bool> resistencias;
+
             public:
                 Personagem();
                 ~Personagem();
@@ -30,22 +33,25 @@ namespace Entidades{
                 virtual void move() = 0;
                 virtual void execute();
                 virtual bool verificaMorte();
-
-                virtual void foraDosLimites() { diminuiVida(); }
+                void setFalseResistencias();
+                
+                virtual void foraDosLimites() { vida = 0; }
                 void diminuiVida() { if(vida > 0) vida--; }
+                void diminuiVida(int hp) { if(vida > 0) vida -= hp; }
+
                 const int getVida() { return vida; }
                 void setVida(int hp) { vida = hp; }
-                const Type getType() const { return Type::Personagem; }
                 bool getDirecao(){ return direcao; }
 
                 virtual void tratarColisao(Projetil* projetil, std::string direcao);
                 virtual void tratarColisao(AreaDeEfeito* area, std::string direcao);
                 virtual void tratarColisao(Objetos::Objeto* obj, std::string direcao);
-                void setEstadoFisico(const int estadoF) { estadoFisico = estadoF; tempoEstado.restart(); }
+                void setEstadoFisico(const int estadoF);
                 void aplicarEstadoFisico();
                 const int getEstadoFisico() { return estadoFisico; }
                 void setDirecao(bool dir) { direcao = dir; }
                 virtual AreaDeEfeito* getArea() = 0;
+                void encerrarEstadoFisico();
         };
     };
 }

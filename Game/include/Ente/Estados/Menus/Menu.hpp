@@ -12,5 +12,6 @@ namespace states{
             void execute();
             virtual void iniciarTextos(){}
             void iniciarEstado();
+            virtual void resized();
     };
 }

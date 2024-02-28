@@ -21,13 +21,15 @@ class Animacao{
         ~Animacao();
 
         void criaFrames(std::string key, int numFrames, bool controlTemp);
-        bool anima(sf::RectangleShape* shape, bool direcao);
-        bool anima(sf::RectangleShape* shape);
+        bool anima(sf::RectangleShape* shape, bool direcao, bool forcarAnima);
+        bool anima(sf::RectangleShape* shape, bool forcarAnima);
+        bool anima(sf::RectangleShape* shape, double frame);
         std::pair<sf::Texture*, sf::IntRect> anima();
         void cortaFrame(int index);
         void atualizaFrameAtual();
         bool TemAnimacao() const { return temAnimacao; }
         void resetaAnimacao();
         int getNumFrames() const { return numFrames; }
+        int getFrameAtual() const { return frameAtual; }
         void trocarImagem(std::string key, int resetar);
 };

@@ -1,4 +1,7 @@
 #include "../include/game.hpp"
+#include <chrono>
+#include <iostream>
+#include <windows.h>
 
 Game::Game(){
     pImagens = GR::GerenciadorImagens::getInstancia();

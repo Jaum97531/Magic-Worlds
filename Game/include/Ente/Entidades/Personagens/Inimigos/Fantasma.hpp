@@ -20,7 +20,6 @@ namespace Entidades{
                 int getTempoMax() { return tempoMax; }
                 void setTempoMax(int tmp) { tempoMax = tmp; }
                 void invisibilidade();
-                virtual Type tipoMaisAbstrato() { return Type::Fantasma; }
         };
     };
 }

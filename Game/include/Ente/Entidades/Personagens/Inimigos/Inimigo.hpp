@@ -27,7 +27,9 @@ namespace Entidades{
             public:
                 Inimigo();
                 ~Inimigo();
-        
+
+
+                virtual void tratarColisao(Jogador* jogador, std::string direcao);
                 static void setJogador(Jogador* jog) { jogador = jog; }
                 virtual void tratarColisaoDaArea(std::string direcao, Type classe);
                 AreaDeEfeito* getArea() { return &area; }

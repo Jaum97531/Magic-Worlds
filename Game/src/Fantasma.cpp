@@ -4,11 +4,13 @@
 Entidades::Personagens::Fantasma::Fantasma(){
     animaAndando.criaFrames("FANTASMA ANDANDO", 26, false);
     corpo.setSize(sf::Vector2f(70, 80));
+    animaAndando.anima(&corpo, true);
     nvlMaldade = 100;
     relogioInivisibilidade.restart();
     tempoMax = 4;
     invisivel = false;
     vida = 100;
+    tipos[Type::Fantasma] = true;
 }
 
 Entidades::Personagens::Fantasma::~Fantasma(){
@@ -59,7 +61,7 @@ void Entidades::Personagens::Fantasma::execute(){
 
     corpo.move(sf::Vector2f(movimento.x, gravidade + movimento.y));
     
-    bool animou = animaAndando.anima(&corpo, direcao);
+    bool animou = animaAndando.anima(&corpo, direcao, false);
 
     area.atualizaPosicao(direcao);
 

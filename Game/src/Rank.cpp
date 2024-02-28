@@ -32,7 +32,7 @@ void states::Rank::tratarSelecao(sf::String selecao){
 }
 
 void states::Rank::desenhar(){
-    if(animacao.TemAnimacao()) bool animou = animacao.anima(&background);
+    if(animacao.TemAnimacao()) bool animou = animacao.anima(&background, false);
     pGrafico->draw(background);
     pGrafico->draw(placa);
     pGrafico->draw(placa2);
@@ -65,30 +65,30 @@ void states::Rank::completarComPontos(int i){
 }
 
 void states::Rank::reorganizarArquivoRank(std::vector<std::pair<std::string, std::string>> vetor_nomes_pontos){
-    std::ofstream arquivo2("utilits/rank.txt", std::ios::trunc);
+    std::ofstream arquivo2("utilits/rank.txt");
     
-    for(auto it : vetor_nomes_pontos){
-        arquivo2<<it.first<<" "<<it.second<<std::endl;
-    }
+    if(arquivo2.is_open()){
+        for(auto it : vetor_nomes_pontos){
+            arquivo2<<it.first<<" "<<it.second<<std::endl;
+        }
 
-    arquivo2.close();
+        arquivo2.close();
+    }
 }
 
-void states::Rank::abrirArquivo(){
-    const int JANELAX = pGrafico->get_JANELAX();
-    const int JANELAY = pGrafico->get_JANELAY();
-
+std::vector<std::pair<std::string, std::string>> states::Rank::criaNomesPts(){
     std::ifstream arquivo("utilits/rank.txt");
-
-    if(!arquivo.is_open()){
-        sf::Text mensagemErro = criarTexto("N ABRIU ARQUIVO RANK", 60, sf::Vector2f(pGrafico->get_JANELAX()/2 - 300, pGrafico->get_JANELAY()/2), AZULVERDE);
-        titulos.push_back(mensagemErro);
-        return;
-    }
 
     std::string linha;
     std::vector<std::pair<std::string, std::string>> vetor_nomes_pontos;
     
+
+    if(!arquivo.is_open()){
+        sf::Text mensagemErro = criarTexto("N ABRIU ARQUIVO RANK", 60, sf::Vector2f(pGrafico->get_JANELAX()/2 - 300, pGrafico->get_JANELAY()/2), AZULVERDE);
+        titulos.push_back(mensagemErro);
+        return vetor_nomes_pontos;
+    }
+      
     while(std::getline(arquivo, linha)){
         int j = 0;
         while (linha[j] != ' '){ j++; }
@@ -101,20 +101,48 @@ void states::Rank::abrirArquivo(){
     }
 
     arquivo.close();
+    return vetor_nomes_pontos;
+}
+
+
+void states::Rank::abrirArquivo(){
+    const int JANELAX = pGrafico->get_JANELAX();
+    const int JANELAY = pGrafico->get_JANELAY();
     
+    std::vector<std::pair<std::string, std::string>> vetor_nomes_pontos = criaNomesPts();
     vetor_nomes_pontos = organizarPontos(vetor_nomes_pontos);
 
     int i;
     for(i = 0; i < (int)vetor_nomes_pontos.size() && i < 7; i++){
         int posY = JANELAY/2 - 200 + i*75;
+        sf::Text bgnome = criarTexto(vetor_nomes_pontos[i].first, 50, sf::Vector2f(placa.getPosition().x + 80 - 5, posY), AZULVERDE);        
+        sf::Text bgpontos = criarTexto(vetor_nomes_pontos[i].second, 50, sf::Vector2f(placa.getPosition().x + placa.getSize().x - 100 - vetor_nomes_pontos[i].second.length()*25 - 5, posY), AZULVERDE);
         sf::Text nome = criarTexto(vetor_nomes_pontos[i].first, 50, sf::Vector2f(placa.getPosition().x + 80, posY), sf::Color::Black);        
         sf::Text pontos = criarTexto(vetor_nomes_pontos[i].second, 50, sf::Vector2f(placa.getPosition().x + placa.getSize().x - 100 - vetor_nomes_pontos[i].second.length()*25, posY), sf::Color::Black);
 
+        titulos.push_back(bgnome);
+        titulos.push_back(bgpontos);
         titulos.push_back(nome);
         titulos.push_back(pontos);
     }
     reorganizarArquivoRank(vetor_nomes_pontos);
     completarComPontos(i);
+}
+
+
+void states::Rank::salvarPontuacao(std::string nome, int pontos){
+    std::ofstream arquivo("utilits/rank.txt", std::ios::app);
+    if (arquivo.is_open()) {
+        std::string novaPontuacao = nome;
+        novaPontuacao += " ";
+        novaPontuacao += std::to_string(pontos);
+
+        arquivo << novaPontuacao << std::endl;
+
+        arquivo.close();
+    } else {
+        std::cerr << "Erro ao abrir o arquivo." << std::endl;
+    }
 }
 
 void states::Rank::iniciarTextos(){
@@ -123,6 +151,9 @@ void states::Rank::iniciarTextos(){
 
     sf::Text voltar = criarTexto("VOLTAR", 60, sf::Vector2f(25, JANELAY - 80), AZULVERDE);
     textos.push_back(voltar);
+
+    sf::Text bgvoltar = criarTexto("VOLTAR", 60, sf::Vector2f(25 - 5, JANELAY - 80), sf::Color::Black);
+    titulos.push_back(bgvoltar);
 
     sf::Text rank = criarTexto("RANK", 120, sf::Vector2f(JANELAX/2-150, 100), sf::Color::Black);
     titulos.push_back(rank);

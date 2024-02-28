@@ -31,8 +31,7 @@ all: compile link
 compile: $(OBJ_FILES)
 
 link:
-	g++ $(OBJ_FILES) -o main -Lsrc/lib -lsfml-graphics -lsfml-window -lsfml-system -lopengl32 -lsfml-audio
-
+	g++ $(OBJ_FILES) -o main -Lsrc/lib -lsfml-graphics -lsfml-window -lsfml-system -lopengl32 -lsfml-audio 
 # Limpar os arquivos .o e o executável
 clean:
 	rm -rf $(OBJ_DIR)/*.o main

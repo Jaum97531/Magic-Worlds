@@ -8,8 +8,8 @@ namespace Entidades{
     namespace Objetos{
         class Plataforma : public Objeto{
             private:
-                friend class EntidadeSaver;
                 int tipo;
+                static int cor;
 
             public:
                 Plataforma(int type);

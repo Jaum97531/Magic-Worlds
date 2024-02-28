@@ -48,7 +48,7 @@ void states::Estado::selecionar(){
 
 
 void states::Estado::desenhar(){
-    if(animacao.TemAnimacao()) bool animou = animacao.anima(&background);
+    if(animacao.TemAnimacao()) bool animou = animacao.anima(&background, false);
     pGrafico->draw(background);
     if(!utilits.empty())desenharUtilits();
     desenharTexto();
@@ -70,14 +70,18 @@ sf::RectangleShape states::Estado::criarShapeTextura(std::string textura, sf::Ve
     sf::RectangleShape shape(size);
     shape.setPosition(posicao);
 
-    sf::Texture* texture = pGrafico->getPimagens()->getTextura(textura);
-    if (texture) {
-        shape.setTexture(texture);
+    if(textura != ""){
+        sf::Texture* texture = pGrafico->getPimagens()->getTextura(textura);
+        if (texture) {
+            shape.setTexture(texture);
 
-        if(repeated){
-            texture->setRepeated(true);
-            shape.setTextureRect(sf::IntRect(0, 0, size.x, texture->getSize().y));
+            if(repeated){
+                texture->setRepeated(true);
+                shape.setTextureRect(sf::IntRect(0, 0, size.x, texture->getSize().y));
+            }
         }
+    }else {
+        shape.setFillColor(sf::Color::Transparent);
     }
 
     return shape;

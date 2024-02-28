@@ -6,7 +6,6 @@ namespace Entidades{
     namespace Objetos{
         class Porta : public Objeto{
             private:
-                friend class EntidadeSaver;
                 states::Fases::Fase* pFase;
 
             public:

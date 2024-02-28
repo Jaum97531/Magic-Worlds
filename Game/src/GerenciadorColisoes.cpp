@@ -1,7 +1,7 @@
 #include "../include/Gerenciadores/GerenciadorColisoes.hpp"
 #include <iostream>
 #include "../include/Ente/Entidades/Projetil.hpp"
-#include "../include/Ente/Entidades/Personagens/Personagem.hpp"
+#include "../include/Ente/Entidades/Personagens/Jogador.hpp"
 #include "../include/Ente/Entidades/Objetos/Objeto.hpp"
 #include "../include/Ente/Entidades/AreaDeEfeito.hpp"
 #include "../include/Gerenciadores/GerenciadorGrafico.hpp"
@@ -75,7 +75,6 @@ void GR::GerenciadorColisao::criarColisaoMap(){
         this->colisaoAreaProjetil(area, projetil, intersecao);
     };
 
-
     colisaoMap[{Type::Area, Type::Objeto}] = [this](Entidade* area, Entidade* objeto, sf::FloatRect intersecao){
         this->colisaoAreaObjeto(area, objeto, intersecao);
     };
@@ -83,7 +82,6 @@ void GR::GerenciadorColisao::criarColisaoMap(){
     colisaoMap[{Type::Objeto, Type::Area}] = [this](Entidade* objeto, Entidade* area, sf::FloatRect intersecao){
         this->colisaoAreaObjeto(area, objeto, intersecao);
     };
-
 }
 
 void GR::GerenciadorColisao::clear(){
@@ -96,7 +94,7 @@ void GR::GerenciadorColisao::colideEntidades(Entidade* ent1, Entidade* ent2){
     sf::FloatRect intersecao;
 
     if (rect1.intersects(rect2, intersecao)){
-        std::pair<Type, Type> key = std::pair<Type, Type>(ent1->getType(), ent2->getType());
+        std::pair<Type, Type> key = std::pair<Type, Type>(ent1->getTipoColision(), ent2->getTipoColision());
 
         if(colisaoMap.count(key) > 0){
             auto colisaoFuncao = colisaoMap[key];
@@ -167,8 +165,10 @@ void GR::GerenciadorColisao::colisaoProjetilObjeto(Entidade* projetil, Entidade*
     Projetil* proje = static_cast<Projetil*>(projetil);
     Objetos::Objeto* obj = static_cast<Objetos::Objeto*>(objeto);
 
-    proje->tratarColisao(obj, "");
-    obj->tratarColisao(proje, "");
+    if(!proje->getExplodindo()){
+        proje->tratarColisao(obj, "");
+        obj->tratarColisao(proje, "");
+    }
 }
 
 
@@ -196,7 +196,7 @@ void GR::GerenciadorColisao::colisaoPersoProjetil(Entidade* perso, Entidade* pro
     Personagens::Personagem* personagem = static_cast<Personagens::Personagem*>(perso);
     Projetil* projetil = static_cast<Projetil*>(proje);
 
-    if(*personagem != projetil->getID_Atirador() && personagem->getEstadoFisico() != INTANGIVEL){
+    if(personagem->getId() != projetil->getID_Atirador() && personagem->getEstadoFisico() != INTANGIVEL && !projetil->getExplodindo()){
         std::pair<std::pair<std::string, std::string>, sf::Vector2f> output = colisaoPadrao(perso, projetil, intersecao);
         std::string dirPerso = output.first.first;
         std::string dirProje = output.first.second;
@@ -207,7 +207,6 @@ void GR::GerenciadorColisao::colisaoPersoProjetil(Entidade* perso, Entidade* pro
         personagem->getShape()->move(sf::Vector2f(deslocamento.x, 0));
     }
 }
-
 
 void GR::GerenciadorColisao::colisaoProjetilProjetil(Entidade* projetil1, Entidade* projetil2, sf::FloatRect intersecao){
     Projetil* projetil_1 = static_cast<Projetil*>(projetil1);
@@ -256,6 +255,30 @@ void GR::GerenciadorColisao::colisaoObjetoObjeto(Entidade* obj1, Entidade* obj2,
 
 void GR::GerenciadorColisao::colisaoPersoPerso(Entidade* perso1, Entidade* perso2, sf::FloatRect intersecao){
    
+    std::pair<std::pair<std::string, std::string>, sf::Vector2f> output = colisaoPadrao(perso1, perso2, intersecao);
+    std::string direcaoP1 = output.first.first;
+    std::string direcaoP2 = output.first.second;
+    sf::Vector2f deslocamento = output.second;
+
+    if(perso1->getTipo(Type::Jogador) || perso2->getTipo(Type::Jogador)){
+        perso1->deslocar(sf::Vector2f(deslocamento.x/2, 0));
+        perso2->deslocar(sf::Vector2f(-deslocamento.x/2, 0));
+    }
+
+
+    if(perso1->getTipo(Type::Jogador)){
+        perso1->tratarColisao(static_cast<Personagens::Personagem*>(perso2), direcaoP1);
+        perso2->tratarColisao(dynamic_cast<Personagens::Jogador*>(perso1), direcaoP2);
+    }
+    else if(perso2->getTipo(Type::Jogador)){
+        perso1->tratarColisao(static_cast<Personagens::Jogador*>(perso2), direcaoP1);
+        perso2->tratarColisao(dynamic_cast<Personagens::Personagem*>(perso1), direcaoP2);
+    }
+    else {
+        perso1->tratarColisao(static_cast<Personagens::Personagem*>(perso2), direcaoP1);
+        perso2->tratarColisao(static_cast<Personagens::Personagem*>(perso1), direcaoP2);
+    }
+
 }
 
 void GR::GerenciadorColisao::colisaoPersoObjeto(Entidade* perso, Entidade* obj, sf::FloatRect intersecao){
@@ -268,11 +291,11 @@ void GR::GerenciadorColisao::colisaoPersoObjeto(Entidade* perso, Entidade* obj, 
     std::string direcaoO = output.first.second;
     sf::Vector2f deslocamento = output.second;
 
-    if(personagem->getTipoSecundario(Type::Jogador) && objeto->getTipoSecundario(Type::Caixa)){
+    if(personagem->getTipo(Type::Jogador) && objeto->getTipo(Type::Caixa)){
         personagem->deslocar(sf::Vector2f(deslocamento.x/2, deslocamento.y));
         objeto->deslocar(sf::Vector2f(-deslocamento.x/2, 0));   
     }
-    else if(objeto->getTipoSecundario(Type::Porta)){
+    else if(objeto->getTipo(Type::Porta)){
         objeto->tratarColisao(personagem, direcaoO);
         return;
     }
@@ -307,20 +330,18 @@ bool GR::GerenciadorColisao::verificaEntidadeDentroDaTela(Entidade* ent){
     return rect.intersects(ent->getShape()->getGlobalBounds());
 }
 
-void GR::GerenciadorColisao::executeColisoes(std::vector<Entidade*>* listaEntidades){
+void GR::GerenciadorColisao::executeColisoes(std::unordered_map<int, Entidade*>* mapEntidade){
     Entidade* ent1 = nullptr;
     Entidade* ent2 = nullptr;
 
-    for(int i = 0; i < (int)listaEntidades->size(); i++){
-        ent1 = listaEntidades->at(i);
-        if(ent1->getAtivo()){
-            if(verificaEntidadeDentroDaTela(ent1)){
-                for(int j = i+1; j < (int)listaEntidades->size(); j++){
-                    ent2 = listaEntidades->at(j);
-                    if(ent2->getAtivo()){
-                        if(*ent1 != ent2)
-                            if(verificaEntidadeDentroDaTela(ent2)) 
-                                colideEntidades(ent1, ent2); 
+    for(auto ent1 : *mapEntidade){
+        if(ent1.second->getAtivo()){
+            if(verificaEntidadeDentroDaTela(ent1.second) || ent1.second->getTipo(Type::Area)){
+                for(auto ent2 : *mapEntidade){
+                    if(ent2.second->getAtivo()){
+                        if(ent1.first != ent2.first)
+                            if(verificaEntidadeDentroDaTela(ent2.second) || ent2.second->getTipo(Type::Area)) 
+                                colideEntidades(ent1.second, ent2.second); 
                     }
                 }
             }

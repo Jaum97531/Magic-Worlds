@@ -10,8 +10,6 @@ namespace Entidades{
             public:
                 Esqueleto();
                 ~Esqueleto();
-                virtual Type tipoMaisAbstrato() { return Type::Esqueleto; }
-
         };
     };
 }

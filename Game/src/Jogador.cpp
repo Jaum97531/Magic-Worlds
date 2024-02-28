@@ -5,10 +5,10 @@
 Entidades::Personagens::Jogador* Entidades::Personagens::Jogador::instancia = nullptr;
 Entidades::Personagens::Jogador::Jogador() : animacoes(GR::GerenciadorAnimacao::getInstacia(this)), estado(PARADO),
 carga(0), magia(0), efeito(false), pulo(false), contPulos(0), previusW(false), area(this, &efeito, 0, true), maxPulos(2),
-pontos(100), pode_mover(true)
+pontos(0), pode_mover(true)
 {   
     velocidade = sf::Vector2f(8, 0);
-    addTipoSecundario(Type::Jogador);
+    tipos[Type::Jogador] = true;
     corpo.setSize(sf::Vector2f(70, 70));
     trocarElemento("VENTO");
 }
@@ -77,36 +77,40 @@ void Entidades::Personagens::Jogador::trocarElemento(sf::String element) {
 
     animacoes->trocaAnimacaoJogador(element); 
     elemento = elementoProjeteis = element;
+    setFalseResistencias();
 
     if(elemento == "VENTO"){
         velocidade.x = 10;
         maxPulos = 3;
-        vida = maxVida = 5;
+        vida = maxVida = 6;
 
         area.setDano(3);
-        area.setImpulso(sf::Vector2f(40, 0));
+        area.setImpulso(sf::Vector2f(20, -5));
         area.setEfeito(NORMAL);
         area.setSize(sf::Vector2f(150, 150));
     }
     else if(elemento == "FOGO"){
         velocidade.x = 8;
+        resistencias[QUEIMANDO] = true;
         maxPulos = 2;
         vida = maxVida = 6;
         area.setDano(10);
-        area.setImpulso(sf::Vector2f(18, 0));
+        area.setImpulso(sf::Vector2f(10, -3));
         area.setEfeito(QUEIMANDO);
         area.setSize(sf::Vector2f(100, 100));
     }
     else if(elemento == "AGUA"){
+        resistencias[CONGELADO] = true;
         velocidade.x = 8;
         maxPulos = 2;
         vida = maxVida = 7;
         area.setDano(3);
-        area.setImpulso(sf::Vector2f(3, 0));
+        area.setImpulso(sf::Vector2f(3, -3));
         area.setEfeito(CONGELADO);
         area.setSize(sf::Vector2f(100, 100));
     }
     else if(elemento == "TERRA"){
+        resistencias[QUEIMANDO] = true;
         velocidade.x = 6;
         maxPulos = 2;
         vida = maxVida = 8;

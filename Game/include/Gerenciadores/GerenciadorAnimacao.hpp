@@ -22,7 +22,6 @@ namespace GR{
         // ---------------  RELACIONADA A JOGADOR ------------------//
             Entidades::Personagens::Jogador* jogador; 
             int ultimaAnimacaoJogador;
-            int contEfeitoJogador;
             Animacao animaAndando;
             Animacao animaCorrendo;
             Animacao animaAtacando;
@@ -34,6 +33,7 @@ namespace GR{
         //----------------- LAVAS ----------------------------------------//
             Animacao animaLavas;
             std::vector<sf::RectangleShape*> vetorDeLavas;
+            sf::Clock relogioLavas;
         //---------------------------------------------------------------//
             GerenciadorAnimacao(Entidades::Personagens::Jogador* jog);
         public:

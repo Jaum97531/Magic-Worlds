@@ -5,7 +5,6 @@ namespace Entidades{
     namespace Objetos{
         class Lava : public Objeto{
             private:
-                friend class EntidadeSaver;
                 sf::RectangleShape shapeAnimacao;
 
             public:

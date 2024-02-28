@@ -29,13 +29,13 @@ void Animacao::criaFrames(std::string key, int num_frames, bool controlTemp){
     controla = controlTemp;
 }
 
-bool Animacao::anima(sf::RectangleShape* shape, bool direcao){
+bool Animacao::anima(sf::RectangleShape* shape, bool direcao, bool forcarAnima=false){
     if (!temAnimacao) {
         std::cerr << "Erro: Nenhuma animação criada." << std::endl;
         return false;
     }
 
-    if(!controla || controlaTempo.getElapsedTime().asMilliseconds() >= 70){
+    if((!controla || controlaTempo.getElapsedTime().asMilliseconds() >= 70) || forcarAnima){
         cortaFrame(frameAtual);
 
         if(!direcao) {
@@ -54,19 +54,30 @@ bool Animacao::anima(sf::RectangleShape* shape, bool direcao){
     return false;
 }
 
-bool Animacao::anima(sf::RectangleShape* shape){
+bool Animacao::anima(sf::RectangleShape* shape, bool forcarAnima=false){
     if (!temAnimacao) {
         std::cerr << "Erro: Nenhuma animação criada." << std::endl;
         return false;
     }
 
-    if(!controla || controlaTempo.getElapsedTime().asMilliseconds() >= 70){
+    if((!controla ||(controlaTempo.getElapsedTime().asMilliseconds() >= 70)) || forcarAnima){
         cortaFrame(frameAtual);
         sf::IntRect textureRect(0, 0, frame.getSize().x, frame.getSize().y);
         shape->setTexture(&frame);
         shape->setTextureRect(textureRect);
         atualizaFrameAtual();
         controlaTempo.restart();
+        return true;
+    }
+    return false;
+}
+
+bool Animacao::anima(sf::RectangleShape* shape, double frame){
+    if(frame < numFrames){
+        cortaFrame(frame);
+        sf::IntRect textureRect(0, 0, this->frame.getSize().x, this->frame.getSize().y);
+        shape->setTexture(&this->frame);
+        shape->setTextureRect(textureRect);
         return true;
     }
     return false;

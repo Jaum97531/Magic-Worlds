@@ -29,7 +29,6 @@ namespace Entidades{
             bool getColideObjeto() { return colideObjeto; }
             void setColideObjeto(bool colide) { colideObjeto = colide; }
 
-            const Type getType() const { return Type::Area; }
             void setColor(sf::Color cor) { corpo.setFillColor(cor); }
             void setAtivado(bool* pEfeito) { ativado = pEfeito; }
             void setEfeito(int pEfeito) { efeito = pEfeito; }

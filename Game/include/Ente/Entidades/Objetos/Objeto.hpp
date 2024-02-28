@@ -5,7 +5,6 @@ namespace Entidades{
     namespace Objetos{
         class Objeto : public Entidade{
             protected:
-                friend class EntidadeSaver;
                 bool especial;
 
             public:

@@ -1,17 +1,19 @@
 #include "../include/Ente/Entidades/Objetos/Plataforma.hpp"
 
+
+int Entidades::Objetos::Plataforma::cor = 0;
 Entidades::Objetos::Plataforma::Plataforma(int type){
     tipo = type;
     corpo.setSize(sf::Vector2f(42, 1000));
     atribuirTexture();
-    addTipoSecundario(Type::Plataforma);
+    tipos[Type::Plataforma] = true;
 }
 
 Entidades::Objetos::Plataforma::Plataforma(int type, sf::Vector2f size){
     tipo = type;
     corpo.setSize(size);
     atribuirTexture();
-    addTipoSecundario(Type::Plataforma);
+    tipos[Type::Plataforma] = true;
 }
 
 
@@ -20,7 +22,6 @@ Entidades::Objetos::Plataforma::~Plataforma(){
 }
 
 Entidades::Objetos::Plataforma::Plataforma() : tipo(0){
-
 }
 
 void Entidades::Objetos::Plataforma::desenhar() {

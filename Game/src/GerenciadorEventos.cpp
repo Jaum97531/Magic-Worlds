@@ -1,6 +1,7 @@
 #include "../include/Gerenciadores/GerenciadorEventos.hpp"
 
 GR::GerenciadorEventos* GR::GerenciadorEventos::instancia = nullptr;
+
 GR::GerenciadorEventos::GerenciadorEventos(){
     pGrafico = GR::GerenciadorGrafico::getInstancia();
     countdownClick.restart();
@@ -10,18 +11,18 @@ GR::GerenciadorEventos::~GerenciadorEventos(){
 }
 
 GR::GerenciadorEventos* GR::GerenciadorEventos::getInstancia(){
-    if(instancia == nullptr) { instancia = new GerenciadorEventos(); }
+    if(instancia == nullptr) 
+        instancia = new GerenciadorEventos();
+
     return instancia;
 }
 
 bool GR::GerenciadorEventos::verificaClickMouse(){
-    if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) { return true; }
-    return false;
+    return sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
 }
 
 bool GR::GerenciadorEventos::verificaClickTecla(sf::Keyboard::Key tecla){
-    if(sf::Keyboard::isKeyPressed(tecla)) { return true; }
-    return false;
+    return sf::Keyboard::isKeyPressed(tecla);
 }
 
 void GR::GerenciadorEventos::execute(){
@@ -30,11 +31,14 @@ void GR::GerenciadorEventos::execute(){
             case sf::Event::Closed :
                 pGrafico->fecharJanela();
                 break;
+            case sf::Event::Resized :
+                notificaObservadores(RESIZED);
+                break;
             case sf::Event::MouseMoved:
                 notificaObservadores(MOUSE);
                 break;
             case sf::Event::MouseButtonPressed :
-                if(countdownClick.getElapsedTime().asMilliseconds() > 150){
+                if(countdownClick.getElapsedTime().asMilliseconds() > 300){
                     notificaObservadores(MOUSE);
                     countdownClick.restart();
                 }             

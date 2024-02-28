@@ -82,6 +82,22 @@ void GR::GerenciadorImagens::criaTexturas(){
     setTextura("PORTA ABERTA", "utilits/imagens/PORTA ABERTA.png");
 
     setTextura("PLATAFORMA 1", "utilits/imagens/PLATAFORMA 1.png");
+
+    setTextura("EXPLOSAO FOGO", "utilits/imagens/EFEITOS/EXPLOSAO FOGO.png");
+    setTextura("EXPLOSAO AGUA", "utilits/imagens/EFEITOS/EXPLOSAO AGUA.png");
+    setTextura("EXPLOSAO TERRA", "utilits/imagens/EFEITOS/EXPLOSAO TERRA.png");
+    setTextura("EXPLOSAO VENTO", "utilits/imagens/EFEITOS/EXPLOSAO VENTO.png");
+
+    setTextura("ICON FOGO", "utilits/imagens/LOGOS/ICON FOGO.png");
+    setTextura("ICON AGUA", "utilits/imagens/LOGOS/ICON AGUA.png");
+    setTextura("ICON TERRA", "utilits/imagens/LOGOS/ICON TERRA.png");
+    setTextura("ICON VENTO", "utilits/imagens/LOGOS/ICON VENTO.png");
+
+    setTextura("BARRA FOGO", "utilits/imagens/BARRA FOGO.png");
+    setTextura("BARRA VENTO", "utilits/imagens/BARRA VENTO.png");
+    setTextura("BARRA AGUA", "utilits/imagens/BARRA AGUA.png");
+    setTextura("BARRA TERRA", "utilits/imagens/BARRA TERRA.png");
+
 }
 
 void GR::GerenciadorImagens::setTextura(std::string key, std::string file, bool repeated, bool smooth){
