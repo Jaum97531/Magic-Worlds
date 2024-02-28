@@ -3,12 +3,12 @@ including inheritance, polymorphism, design patterns, data structures, and decou
 
 # MAGICAL WORLD 
 
-## CONTROLES
-- "A", "S", "D", "W" - MOVIMENTA PERSONAGENS
-- "SHIFT" - CORRER
-- "H" - ATIRA PROJETIL
-- "SPACE" - ATACA
+## CHARACTER CONTROLS
+- "A", "S", "D", "W" - Move
+- "SHIFT" - Run
+- "H" - Shoot
+- "SPACE" - Attack
  
 ## FASE
-- "P" - PAUSA
-- SE VOCE CHEGAR EM ALGUMA PORTA, CLIQUE "ENTER" PARA ENTRAR
+- "P" - Pause
+- "ENTER" - to enter doors
