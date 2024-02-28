@@ -9,6 +9,6 @@ including inheritance, polymorphism, design patterns, data structures, and decou
 - "H" - Shoot
 - "SPACE" - Attack
  
-### LEVEL INFO
+### PHASE INFO
 - "P" - Pause
 - "ENTER" - to enter doors
