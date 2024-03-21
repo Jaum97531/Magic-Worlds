@@ -14,6 +14,7 @@ namespace states{
                 void criarFase();
                 void carregarFase();
                 void criaObstaculos();
+                void tratarSelecao(sf::String selecao);
                 void determinarPosicaoInimigos();
                 const int numeroDeFase() { return FASE1; }
         };

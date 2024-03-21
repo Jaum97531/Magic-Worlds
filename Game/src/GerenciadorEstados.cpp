@@ -1,6 +1,7 @@
 #include "../include/Ente/Estados/Menus/MenuInicial.hpp"
 #include "../include/Ente/Estados/Menus/Lobby.hpp"
 #include "../include/Ente/Estados/Fases/Fase1.hpp"
+#include "../include/Ente/Estados/Fases/Fase2.hpp"
 #include "../include/Ente/Estados/Menus/Pausa.hpp"
 #include "../include/Ente/Estados/Menus/GameOver.hpp"
 #include "../include/Ente/Estados/Menus/Rank.hpp"
@@ -54,6 +55,7 @@ void GR::GerenciadorEstados::criarEstados(){
     mapEstados[PAUSA] = pausa;
 
     mapEstados[FASE1] = nullptr;
+    mapEstados[FASE2] = nullptr;
 
     states::GameOver* gameOver = new states::GameOver();
     mapEstados[GAMEOVER] = gameOver;
@@ -75,10 +77,18 @@ bool GR::GerenciadorEstados::tratarTrocaEspecificas(int& estado){
     }
 
     if (estado == NEWGAME) {
-        deleteEstado(FASE1);
-        states::Fases::Fase1* fase1 = new states::Fases::Fase1();
-        mapEstados[FASE1] = fase1;
-        estado = FASE1;
+        deleteEstado(FASE2);
+        states::Fases::Fase2* fase1 = new states::Fases::Fase2();
+        mapEstados[FASE2] = fase1;
+        estado = FASE2;
+        return true;
+    }
+    
+    if(estado == FASE2){
+        deleteEstado(FASE2);
+        states::Fases::Fase2* fase2 = new states::Fases::Fase2();
+        mapEstados[FASE2] = fase2;
+        estado = FASE2;
         return true;
     }
 

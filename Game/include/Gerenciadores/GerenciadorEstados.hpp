@@ -23,7 +23,6 @@ namespace states{
 #define CONTINUE 8
 #define FASE2 9
 #define MENSAGEM 10
-
 /*
         Estados: 
     0 - Menu inicial;

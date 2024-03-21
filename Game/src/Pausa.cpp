@@ -21,6 +21,9 @@ void states::Pausa::setAnimacao(int fase){
         case FASE1 :
             animacao.criaFrames("VULCAO", 8, false);
             break;
+        case FASE2 :
+            animacao.criaFrames("CAVERNA", 12, false);
+            break;
     }
 }
 

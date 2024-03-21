@@ -34,7 +34,7 @@ namespace states{
 
             void tratarSelecao(sf::String selecao){
                 if(selecao == "LOBBY") { pEstados->trocarEstado(LOBBY); }
-                else if(selecao == "CONTINUAR FASE") { pEstados->trocarEstado(FASE1); }
+                else if(selecao == "CONTINUAR FASE") { pEstados->trocarEstado(FASE2); }
             }
     };
 };

@@ -55,8 +55,10 @@ void GR::GerenciadorImagens::criaTexturas(){
     setTextura("FASE FOGO", "utilits/imagens/PLATAFORMAS/FASE FOGO.png");
     setTextura("FASE LAVA", "utilits/imagens/BACKGROUNDS/lava.png");
     setTextura("LOBBY BG", "utilits/imagens/BACKGROUNDS/lobby bg.png");
-
+    setTextura("CAVERNA", "utilits/imagens/BACKGROUNDS/caverna.png");
     setTextura("LAVA", "utilits/imagens/LAVA.png");
+    setTextura("FASE CAVERNA PLATAFORMAS", "utilits/imagens/PLATAFORMAS/FASE CAVERNA PLATAFORMAS.png");
+    setTextura("FASE CAVERNA", "utilits/imagens/PLATAFORMAS/FASE CAVERNA.png");
     
     setTextura("CORACAO", "utilits/imagens/CORACAO.png", true);
 
