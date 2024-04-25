@@ -1,6 +1,6 @@
 #include "../include/Ente/Estados/Fases/Fase1.hpp"
 #include "../include/Ente/Entidades/Objetos/Porta.hpp"
-#include <iostream>
+
 states::Fases::Fase1::Fase1() {
     limiteDaFase = sf::FloatRect(-20, -20, 3834, 1080);
     valorTileMap = 32;
@@ -45,13 +45,18 @@ void states::Fases::Fase1::criaObstaculos(){
 }
 
 void states::Fases::Fase1::criarFase() {
-
     gerenAnimacao->criarAnimacaoLava();
     jogador->setPosition(sf::Vector2f (70, pGrafico->get_JANELAY()/2 + 100));
     if(!animacao.TemAnimacao()) animacao.criaFrames("VULCAO", 8, false);
     criarMapa("FASE FOGO PLATAFORMAS", "FASE FOGO");
     criaObstaculos();
     criaInimigos();
+}
+
+void states::Fases::Fase1::tratarSelecao(sf::String selecao){ 
+    if(selecao == "PROX FASE") {
+        pEstados->trocarEstado(FASE2);
+    } 
 }
 
 void states::Fases::Fase1::carregarFase(){

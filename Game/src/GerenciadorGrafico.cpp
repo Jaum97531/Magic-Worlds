@@ -1,18 +1,25 @@
 #include "../include/Gerenciadores/GerenciadorGrafico.hpp"
 #include"../include/Ente/Ente.hpp"
+#include <iostream>
 
 GR::GerenciadorGrafico* GR::GerenciadorGrafico::instancia = nullptr; 
 
 GR::GerenciadorGrafico::GerenciadorGrafico(){
     pImagens = GR::GerenciadorImagens::getInstancia();
-    janela = new sf::RenderWindow(sf::VideoMode::getFullscreenModes()[0], "Game", sf::Style::Fullscreen);
+    janela = new sf::RenderWindow(sf::VideoMode::getFullscreenModes()[0], "Magical World", sf::Style::Fullscreen);
     fonte = new sf::Font();
+   
+    sf::Image icon;
+    if(!icon.loadFromFile("C:/Users/JaZ/Documents/game/utilits/imagens/icon.png")){
+        std::cout<<"ERROR LOAD ICON"<<std::endl;
+    }
 
     camera = janela->getDefaultView();
     camera.setSize(sf::Vector2f(janela->getSize()));
     camera.setCenter(camera.getSize()/2.f);
     janela->setView(camera);
     janela->setFramerateLimit(25);
+    janela->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     fonte->loadFromFile("utilits/alagard.ttf");
 
 }

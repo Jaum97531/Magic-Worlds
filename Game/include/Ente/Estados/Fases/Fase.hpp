@@ -86,7 +86,7 @@ namespace states{
                 void verificaAtualizacao();
                 void salvarFase();
                 void tratarSelecao();
-                void tratarSelecao(sf::String selecao){ if(selecao == "PROX FASE") { pEstados->trocarEstado(MENSAGEM); } }
+                virtual void tratarSelecao(sf::String selecao){}
                 void resized();
         };
     };

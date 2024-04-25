@@ -1,14 +1,11 @@
-A game crafted using SFML with the goal of applying concepts from the object-oriented programming paradigm,
-including inheritance, polymorphism, design patterns, data structures, and decoupling.
+# MAGICAL WORLD 
 
-## MAGICAL WORLD 
-
-### CHARACTER CONTROLS
-- "A", "S", "D", "W" - Move
-- "SHIFT" - Run
-- "H" - Shoot
-- "SPACE" - Attack
+## CONTROLES
+- "A", "S", "D", "W" - MOVIMENTA PERSONAGENS
+- "SHIFT" - CORRER
+- "H" - ATIRA PROJETIL
+- "SPACE" - ATACA
  
-### PHASE INFO
-- "P" - Pause
-- "ENTER" - to enter doors
+## FASE
+- "P" - PAUSA
+- SE VOCE CHEGAR EM ALGUMA PORTA, CLIQUE "ENTER" PARA ENTRAR
