@@ -77,18 +77,15 @@ bool GR::GerenciadorEstados::tratarTrocaEspecificas(int& estado){
     }
 
     if (estado == NEWGAME) {
-        deleteEstado(FASE2);
-        states::Fases::Fase2* fase1 = new states::Fases::Fase2();
-        mapEstados[FASE2] = fase1;
-        estado = FASE2;
+        deleteEstado(FASE1);
+        mapEstados[FASE1] = new states::Fases::Fase1();
+        estado = FASE1;
         return true;
     }
     
-    if(estado == FASE2){
-        deleteEstado(FASE2);
-        states::Fases::Fase2* fase2 = new states::Fases::Fase2();
-        mapEstados[FASE2] = fase2;
-        estado = FASE2;
+    if(estado == FASE2 || estado == FASE1){
+        if(mapEstados[estado] == nullptr) 
+            mapEstados[estado] = (estado == FASE1)? static_cast<states::Fases::Fase*>(new states::Fases::Fase1()) : static_cast<states::Fases::Fase*>(new states::Fases::Fase2()); 
         return true;
     }
 

@@ -126,7 +126,7 @@ void states::Fases::Fase::criarMapa(std::string plat, std::string fase) {
     plataformas.setSize(sf::Vector2f(pGrafico->get_JANELAX()*2, pGrafico->get_JANELAY()));
     plataformas.setPosition(sf::Vector2f(0, 0));
     plataformas.setTexture( textura);
-
+    
     for (int y = 0; y < sizeY; y += valorTileMap) 
     {
         float posY = y * proporcao.y;

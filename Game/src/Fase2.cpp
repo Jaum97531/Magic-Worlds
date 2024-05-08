@@ -20,7 +20,7 @@ void states::Fases::Fase2::tratarSelecao(sf::String selecao){
         if(jogador->getShape()->getPosition().x > limiteDaFase.width/2)
             pEstados->trocarEstado(MENSAGEM);
         else 
-            pEstados->trocarEstado(FASE2);
+            pEstados->trocarEstado(FASE1);
     }
 
 }
